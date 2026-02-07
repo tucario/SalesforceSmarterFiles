@@ -1,0 +1,29 @@
+# Salesforce CLI
+.sf/
+.sfdx/
+.localdev/
+
+# IDE
+.idea/
+/IlluminatedCloud/
+/.illuminatedCloud/
+/out/
+*.iml
+
+# Build
+target/
+node_modules/
+
+# LWC generated
+**/tsconfig*.json
+**/*.tsbuildinfo
+**/graphql.config.yml
+
+# Speckit / specs
+.specify/
+specs/
+CLAUDE.md
+
+# OS
+.DS_Store
+Thumbs.db

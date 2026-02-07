@@ -1,0 +1,78 @@
+.file-list-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e5e5e5;
+    transition: background-color 0.1s ease;
+}
+
+.file-list-item:last-child {
+    border-bottom: none;
+}
+
+.file-list-item:hover {
+    background-color: #f3f3f3;
+}
+
+.file-icon {
+    flex-shrink: 0;
+    margin-right: 0.75rem;
+}
+
+.file-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.file-name {
+    color: #0070d2;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+
+.file-name:hover {
+    text-decoration: underline;
+    color: #005fb2;
+}
+
+.file-meta {
+    color: #706e6b;
+    font-size: 0.75rem;
+    margin-top: 0.125rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #706e6b;
+    font-size: 0.8125rem;
+}
+
+.download-link {
+    color: #0070d2;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    text-decoration: none;
+}
+
+.download-link:hover {
+    text-decoration: underline;
+    color: #005fb2;
+}
+
+.download-link-disabled {
+    color: #c9c7c5;
+    cursor: default;
+    font-size: 0.8125rem;
+}
+
+.spinner-overlay {
+    position: relative;
+    min-height: 4rem;
+}

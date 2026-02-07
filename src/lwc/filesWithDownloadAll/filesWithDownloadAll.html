@@ -1,0 +1,61 @@
+<template>
+    <lightning-card title={headerTitle} icon-name="standard:file">
+        <div slot="actions">
+            <template lwc:if={hasFiles}>
+                <template lwc:if={isDownloading}>
+                    <lightning-spinner alternative-text="Preparing download" size="small"></lightning-spinner>
+                </template>
+                <template lwc:else>
+                    <a class="download-link" onclick={handleDownloadAll}>Download All Files</a>
+                </template>
+            </template>
+        </div>
+
+        <div class="slds-card__body">
+            <template lwc:if={error}>
+                <div class="slds-p-around_small slds-text-color_error">
+                    {error}
+                </div>
+            </template>
+
+            <template lwc:if={hasFiles}>
+                <div class="slds-scrollable_y" style="max-height: 400px;">
+                    <template for:each={files} for:item="file">
+                        <div key={file.contentDocumentId} class="file-list-item">
+                            <div class="file-icon">
+                                <lightning-icon icon-name={file.iconName} size="small"></lightning-icon>
+                            </div>
+                            <div class="file-details">
+                                <a class="file-name"
+                                   data-id={file.contentDocumentId}
+                                   onclick={handlePreviewFile}
+                                   title={file.displayName}>
+                                    {file.displayName}
+                                </a>
+                                <div class="file-meta">
+                                    {file.formattedSize} &bull; {file.formattedDate}
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <template lwc:if={showEmptyState}>
+                <div class="empty-state">
+                    <p>No files attached to this record.</p>
+                </div>
+            </template>
+        </div>
+
+        <div slot="footer" class="slds-p-horizontal_small">
+            <lightning-file-upload
+                label="Upload Files"
+                name="fileUploader"
+                record-id={recordId}
+                onuploadfinished={handleUploadFinished}
+                multiple>
+            </lightning-file-upload>
+        </div>
+    </lightning-card>
+</template>
