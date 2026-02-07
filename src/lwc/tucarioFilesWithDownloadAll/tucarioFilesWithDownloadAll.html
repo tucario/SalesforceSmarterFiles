@@ -46,7 +46,6 @@
                                         data-id={file.contentDocumentId}
                                         onselect={handleRowAction}>
                                         <lightning-menu-item value="download" label={label.Files_Action_Download}></lightning-menu-item>
-                                        <lightning-menu-item value="share" label={label.Files_Action_Share}></lightning-menu-item>
                                         <template lwc:if={isContentDeliveryEnabled}>
                                             <lightning-menu-item value="publiclink" label={label.Files_Action_Public_Link}></lightning-menu-item>
                                         </template>
@@ -80,7 +79,6 @@
                                             data-id={file.contentDocumentId}
                                             onselect={handleRowAction}>
                                             <lightning-menu-item value="download" label={label.Files_Action_Download}></lightning-menu-item>
-                                            <lightning-menu-item value="share" label={label.Files_Action_Share}></lightning-menu-item>
                                             <template lwc:if={isContentDeliveryEnabled}>
                                                 <lightning-menu-item value="publiclink" label={label.Files_Action_Public_Link}></lightning-menu-item>
                                             </template>
