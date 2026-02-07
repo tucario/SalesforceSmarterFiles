@@ -24,6 +24,11 @@
     min-width: 0;
 }
 
+.file-actions {
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+
 .file-name {
     color: #0070d2;
     cursor: pointer;

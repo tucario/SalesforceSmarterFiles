@@ -155,7 +155,100 @@
         <value>Show All Files ({0} more)</value>
     </labels>
 
+    <!-- File component — row action labels -->
+    <labels>
+        <fullName>Tucario_Files_Action_Download</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Row Action: Download</shortDescription>
+        <value>Download</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Action_Share</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Row Action: Share</shortDescription>
+        <value>Share</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Action_Public_Link</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Row Action: Public Link</shortDescription>
+        <value>Public Link</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Action_View_Details</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Row Action: View File Details</shortDescription>
+        <value>View File Details</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Action_Edit_Details</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Row Action: Edit File Details</shortDescription>
+        <value>Edit File Details</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Action_Delete</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Row Action: Delete</shortDescription>
+        <value>Delete</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Action_Remove</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Row Action: Remove from Record</shortDescription>
+        <value>Remove from Record</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Action_Menu_Alt</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Row Action Menu Accessibility Text</shortDescription>
+        <value>File actions</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Delete_Confirm</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Delete Confirmation Message</shortDescription>
+        <value>Are you sure you want to permanently delete this file? This cannot be undone.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Remove_Confirm</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Remove from Record Confirmation Message</shortDescription>
+        <value>Are you sure you want to remove this file from the record? The file will still exist in Salesforce.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Delete_Success</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Delete Success Toast Message</shortDescription>
+        <value>File deleted successfully.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Remove_Success</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Remove from Record Success Toast Message</shortDescription>
+        <value>File removed from record successfully.</value>
+    </labels>
+
     <!-- Common labels -->
+    <labels>
+        <fullName>Tucario_Common_Confirm</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Confirmation Dialog Title</shortDescription>
+        <value>Confirm</value>
+    </labels>
     <labels>
         <fullName>Tucario_Common_Error</fullName>
         <language>en_US</language>

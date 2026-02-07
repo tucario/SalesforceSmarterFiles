@@ -11,6 +11,8 @@ public with sharing class TucarioFileDownloadController {
         @AuraEnabled public Id versionId;
         @AuraEnabled public Datetime lastModifiedDate;
         @AuraEnabled public String fileExtension;
+        @AuraEnabled public Boolean hasEditAccess;
+        @AuraEnabled public Boolean hasDeleteAccess;
     }
 
     /**
@@ -63,6 +65,16 @@ public with sharing class TucarioFileDownloadController {
             versionsByDocId.put(cv.ContentDocumentId, cv);
         }
 
+        Map<Id, UserRecordAccess> accessMap = new Map<Id, UserRecordAccess>();
+        for (UserRecordAccess ura : [
+            SELECT RecordId, HasEditAccess, HasDeleteAccess
+            FROM UserRecordAccess
+            WHERE UserId = :UserInfo.getUserId()
+              AND RecordId IN :docIds
+        ]) {
+            accessMap.put(ura.RecordId, ura);
+        }
+
         for (ContentDocumentLink link : docLinks) {
             FileInfo fi = new FileInfo();
             fi.contentDocumentId = link.ContentDocumentId;
@@ -77,10 +89,75 @@ public with sharing class TucarioFileDownloadController {
                 fi.fileExtension = cv.FileExtension;
             }
 
+            UserRecordAccess access = accessMap.get(link.ContentDocumentId);
+            if (access != null) {
+                fi.hasEditAccess = access.HasEditAccess;
+                fi.hasDeleteAccess = access.HasDeleteAccess;
+            } else {
+                fi.hasEditAccess = false;
+                fi.hasDeleteAccess = false;
+            }
+
             fileInfoList.add(fi);
         }
 
         return fileInfoList;
+    }
+
+    /**
+     * Permanently deletes a file from Salesforce.
+     * Cascades to all ContentDocumentLinks and ContentVersions.
+     * @param contentDocumentId The ID of the ContentDocument to delete
+     * @throws AuraHandledException if the file cannot be deleted (insufficient access or not found)
+     */
+    @AuraEnabled
+    public static void deleteFile(Id contentDocumentId) {
+        try {
+            delete [SELECT Id FROM ContentDocument WHERE Id = :contentDocumentId LIMIT 1];
+        } catch (DmlException e) {
+            AuraHandledException ex = new AuraHandledException(e.getMessage());
+            ex.setMessage(e.getMessage());
+            throw ex;
+        }
+    }
+
+    /**
+     * Removes a file from a record by deleting the ContentDocumentLink.
+     * The file itself is not deleted and remains accessible from other linked records.
+     * @param contentDocumentId The ID of the ContentDocument to unlink
+     * @param recordId The ID of the record to remove the file from
+     * @throws AuraHandledException if the link cannot be found or deleted
+     */
+    @AuraEnabled
+    public static void removeFileFromRecord(Id contentDocumentId, Id recordId) {
+        try {
+            ContentDocumentLink link = [
+                SELECT Id
+                FROM ContentDocumentLink
+                WHERE ContentDocumentId = :contentDocumentId
+                  AND LinkedEntityId = :recordId
+                LIMIT 1
+            ];
+            delete link;
+        } catch (QueryException e) {
+            AuraHandledException ex = new AuraHandledException(System.Label.Tucario_Files_Error_File_Not_Found);
+            ex.setMessage(System.Label.Tucario_Files_Error_File_Not_Found);
+            throw ex;
+        } catch (DmlException e) {
+            AuraHandledException ex = new AuraHandledException(e.getMessage());
+            ex.setMessage(e.getMessage());
+            throw ex;
+        }
+    }
+
+    /**
+     * Checks if Content Deliveries (Public Links) are enabled and the current user can create them.
+     * @return true if ContentDistribution is createable by the current user, false otherwise
+     */
+    @AuraEnabled(cacheable=true)
+    public static Boolean isContentDeliveryEnabled() {
+        SObjectType cdType = Schema.getGlobalDescribe().get('ContentDistribution');
+        return cdType != null && cdType.getDescribe().isCreateable();
     }
 
     /**
