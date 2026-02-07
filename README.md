@@ -24,6 +24,7 @@ Click the button above to deploy this component directly to your Salesforce org.
 | Apex Test Classes | FileDownloadControllerTest, TucarioMetadataServiceTest, TucarioSetupControllerTest |
 | Lightning Web Components | filesWithDownloadAll, tucarioMetadataExplorer, tucarioSetupWizard, tucarioSetupWizardV2 |
 | Static Resources | JSZip (3.10.1) |
+| Permission Set | Tucario_Files |
 
 > **Production note:** Production orgs may require Apex test execution during deployment. If the one-click deploy fails for this reason, use the CLI fallback below:
 >
@@ -55,6 +56,27 @@ sf project deploy start --source-dir src --target-org <your-org-alias>
 3. Drag the **Files with Download All** component onto the page
 4. Configure properties as needed (see below)
 5. Save and activate the page
+6. Assign the **Tucario Files** permission set to users who need the component (see [Permissions](#permissions))
+
+## Permissions
+
+### Option 1: Use the included permission set
+
+1. Navigate to **Setup > Permission Sets**
+2. Find **Tucario Files**
+3. Assign to users who need the component
+
+### Option 2: Add to your own permission set
+
+If you manage access through your own permission sets, add:
+
+- **Apex Class Access**: `TucarioFileDownloadController` — enabled
+
+### Notes
+
+- System Administrators already have access (implicit Apex class access via "Modify All Data" / "Author Apex")
+- Users need standard Files access (included in all standard profiles)
+- File visibility is governed by your org's sharing rules
 
 ## Configuration
 
@@ -105,6 +127,8 @@ src/
       tucarioFilesWithDownloadAll.html      -- Template
       tucarioFilesWithDownloadAll.css       -- Styles
       tucarioFilesWithDownloadAll.js-meta.xml -- Metadata & configurable properties
+  permissionsets/
+    Tucario_Files.permissionset-meta.xml    -- Permission Set (Apex class access)
   staticresources/
     TucarioJSZip.resource                   -- JSZip 3.10.1 library
 ```
