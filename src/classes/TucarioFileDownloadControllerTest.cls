@@ -1,5 +1,5 @@
 @IsTest
-private class FileDownloadControllerTest {
+private class TucarioFileDownloadControllerTest {
 
     @TestSetup
     static void setupTestData() {
@@ -33,7 +33,7 @@ private class FileDownloadControllerTest {
         Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
 
         Test.startTest();
-        List<FileDownloadController.FileInfo> files = FileDownloadController.getFilesList(testAccount.Id);
+        List<TucarioFileDownloadController.FileInfo> files = TucarioFileDownloadController.getFilesList(testAccount.Id);
         Test.stopTest();
 
         System.assertEquals(1, files.size(), 'Should return 1 file');
@@ -50,7 +50,7 @@ private class FileDownloadControllerTest {
         insert emptyAccount;
 
         Test.startTest();
-        List<FileDownloadController.FileInfo> files = FileDownloadController.getFilesList(emptyAccount.Id);
+        List<TucarioFileDownloadController.FileInfo> files = TucarioFileDownloadController.getFilesList(emptyAccount.Id);
         Test.stopTest();
 
         System.assertEquals(0, files.size(), 'Should return empty list for record with no files');
@@ -67,7 +67,7 @@ private class FileDownloadControllerTest {
         ];
 
         Test.startTest();
-        FileDownloadController.FileContent content = FileDownloadController.getFileContent(cv.Id);
+        TucarioFileDownloadController.FileContent content = TucarioFileDownloadController.getFileContent(cv.Id);
         Test.stopTest();
 
         System.assertNotEquals(null, content, 'FileContent should not be null');
@@ -83,7 +83,7 @@ private class FileDownloadControllerTest {
         String fileName = 'uploaded.txt';
 
         Test.startTest();
-        Id cvId = FileDownloadController.uploadFile(base64Data, fileName, testAccount.Id);
+        Id cvId = TucarioFileDownloadController.uploadFile(base64Data, fileName, testAccount.Id);
         Test.stopTest();
 
         System.assertNotEquals(null, cvId, 'Should return a ContentVersion Id');
@@ -106,7 +106,7 @@ private class FileDownloadControllerTest {
 
         Test.startTest();
         try {
-            FileDownloadController.uploadFile(null, 'test.txt', testAccount.Id);
+            TucarioFileDownloadController.uploadFile(null, 'test.txt', testAccount.Id);
             System.assert(false, 'Should have thrown AuraHandledException');
         } catch (AuraHandledException e) {
             System.assertEquals('File data is required.', e.getMessage());
@@ -120,7 +120,7 @@ private class FileDownloadControllerTest {
 
         Test.startTest();
         try {
-            FileDownloadController.uploadFile('SGVsbG8=', null, testAccount.Id);
+            TucarioFileDownloadController.uploadFile('SGVsbG8=', null, testAccount.Id);
             System.assert(false, 'Should have thrown AuraHandledException');
         } catch (AuraHandledException e) {
             System.assertEquals('File name is required.', e.getMessage());
@@ -132,7 +132,7 @@ private class FileDownloadControllerTest {
     static void testUploadFile_NullRecordId() {
         Test.startTest();
         try {
-            FileDownloadController.uploadFile('SGVsbG8=', 'test.txt', null);
+            TucarioFileDownloadController.uploadFile('SGVsbG8=', 'test.txt', null);
             System.assert(false, 'Should have thrown AuraHandledException');
         } catch (AuraHandledException e) {
             System.assertEquals('Record ID is required.', e.getMessage());
@@ -147,7 +147,7 @@ private class FileDownloadControllerTest {
 
         Test.startTest();
         try {
-            FileDownloadController.getFileContent(fakeId);
+            TucarioFileDownloadController.getFileContent(fakeId);
             System.assert(false, 'Should have thrown AuraHandledException');
         } catch (AuraHandledException e) {
             System.assertEquals('File not found or access denied.', e.getMessage(),

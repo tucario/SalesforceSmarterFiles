@@ -3,10 +3,10 @@
         <div slot="actions">
             <template lwc:if={hasFiles}>
                 <template lwc:if={isDownloading}>
-                    <lightning-spinner alternative-text="Preparing download" size="small"></lightning-spinner>
+                    <lightning-spinner alternative-text={label.Files_Preparing_Download} size="small"></lightning-spinner>
                 </template>
                 <template lwc:else>
-                    <a class="download-link" onclick={handleDownloadAll}>Download All Files</a>
+                    <a class="download-link" onclick={handleDownloadAll}>{label.Files_Download_All}</a>
                 </template>
             </template>
         </div>
@@ -43,7 +43,7 @@
 
             <template lwc:if={showEmptyState}>
                 <div class="empty-state">
-                    <p>No files attached to this record.</p>
+                    <p>{label.Files_Empty_State}</p>
                 </div>
             </template>
         </div>
@@ -51,13 +51,13 @@
         <div slot="footer" class="upload-area">
             <template lwc:if={isUploading}>
                 <div class="slds-spinner_container">
-                    <lightning-spinner alternative-text="Uploading files" size="small"></lightning-spinner>
+                    <lightning-spinner alternative-text={label.Files_Uploading} size="small"></lightning-spinner>
                 </div>
             </template>
             <template lwc:if={hasExcludedExtensions}>
                 <lightning-input
                     type="file"
-                    label="Upload Files"
+                    label={label.Files_Upload_Label}
                     multiple
                     disabled={isUploading}
                     onchange={handleFilesSelected}>
@@ -65,7 +65,7 @@
             </template>
             <template lwc:else>
                 <lightning-file-upload
-                    label="Upload Files"
+                    label={label.Files_Upload_Label}
                     name="fileUploader"
                     record-id={recordId}
                     onuploadfinished={handleUploadFinished}
