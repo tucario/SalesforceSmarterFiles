@@ -19,51 +19,95 @@
             </template>
 
             <template lwc:if={hasFiles}>
-                <div class="slds-scrollable_y" style="max-height: 400px;">
-                    <template for:each={displayedFiles} for:item="file">
-                        <div key={file.contentDocumentId} class="file-list-item">
-                            <div class="file-icon">
-                                <lightning-icon icon-name={file.iconName} size="small"></lightning-icon>
-                            </div>
-                            <div class="file-details">
-                                <a class="file-name"
-                                   data-id={file.contentDocumentId}
-                                   onclick={handlePreviewFile}
-                                   title={file.displayName}>
-                                    {file.displayName}
-                                </a>
-                                <div class="file-meta">
-                                    {file.formattedSize} &bull; {file.formattedDate}
+                <template lwc:if={isListView}>
+                    <div class="slds-scrollable_y" style="max-height: 400px;">
+                        <template for:each={displayedFiles} for:item="file">
+                            <div key={file.contentDocumentId} class="file-list-item">
+                                <div class="file-icon">
+                                    <lightning-icon icon-name={file.iconName} size="small"></lightning-icon>
+                                </div>
+                                <div class="file-details">
+                                    <a class="file-name"
+                                       data-id={file.contentDocumentId}
+                                       onclick={handlePreviewFile}
+                                       title={file.displayName}>
+                                        {file.displayName}
+                                    </a>
+                                    <div class="file-meta">
+                                        {file.formattedSize} &bull; {file.formattedDate}
+                                    </div>
+                                </div>
+                                <div class="file-actions">
+                                    <lightning-button-menu
+                                        alternative-text={label.Files_Action_Menu_Alt}
+                                        menu-alignment="auto"
+                                        variant="bare"
+                                        icon-size="x-small"
+                                        data-id={file.contentDocumentId}
+                                        onselect={handleRowAction}>
+                                        <lightning-menu-item value="download" label={label.Files_Action_Download}></lightning-menu-item>
+                                        <lightning-menu-item value="share" label={label.Files_Action_Share}></lightning-menu-item>
+                                        <template lwc:if={isContentDeliveryEnabled}>
+                                            <lightning-menu-item value="publiclink" label={label.Files_Action_Public_Link}></lightning-menu-item>
+                                        </template>
+                                        <lightning-menu-item value="details" label={label.Files_Action_View_Details}></lightning-menu-item>
+                                        <template lwc:if={file.hasEditAccess}>
+                                            <lightning-menu-item value="edit" label={label.Files_Action_Edit_Details}></lightning-menu-item>
+                                        </template>
+                                        <template lwc:if={file.hasDeleteAccess}>
+                                            <lightning-menu-item value="delete" label={label.Files_Action_Delete}></lightning-menu-item>
+                                        </template>
+                                        <template lwc:if={file.hasEditAccess}>
+                                            <lightning-menu-item value="remove" label={label.Files_Action_Remove}></lightning-menu-item>
+                                        </template>
+                                    </lightning-button-menu>
                                 </div>
                             </div>
-                            <div class="file-actions">
-                                <lightning-button-menu
-                                    alternative-text={label.Files_Action_Menu_Alt}
-                                    menu-alignment="auto"
-                                    variant="bare"
-                                    icon-size="x-small"
-                                    data-id={file.contentDocumentId}
-                                    onselect={handleRowAction}>
-                                    <lightning-menu-item value="download" label={label.Files_Action_Download}></lightning-menu-item>
-                                    <lightning-menu-item value="share" label={label.Files_Action_Share}></lightning-menu-item>
-                                    <template lwc:if={isContentDeliveryEnabled}>
-                                        <lightning-menu-item value="publiclink" label={label.Files_Action_Public_Link}></lightning-menu-item>
-                                    </template>
-                                    <lightning-menu-item value="details" label={label.Files_Action_View_Details}></lightning-menu-item>
-                                    <template lwc:if={file.hasEditAccess}>
-                                        <lightning-menu-item value="edit" label={label.Files_Action_Edit_Details}></lightning-menu-item>
-                                    </template>
-                                    <template lwc:if={file.hasDeleteAccess}>
-                                        <lightning-menu-item value="delete" label={label.Files_Action_Delete}></lightning-menu-item>
-                                    </template>
-                                    <template lwc:if={file.hasEditAccess}>
-                                        <lightning-menu-item value="remove" label={label.Files_Action_Remove}></lightning-menu-item>
-                                    </template>
-                                </lightning-button-menu>
-                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template lwc:elseif={isTileView}>
+                    <div class="slds-scrollable_y" style="max-height: 400px;">
+                        <div class="file-tile-grid">
+                            <template for:each={displayedFiles} for:item="file">
+                                <div key={file.contentDocumentId} class="file-tile">
+                                    <div class="file-tile-actions">
+                                        <lightning-button-menu
+                                            alternative-text={file.tileActionAlt}
+                                            menu-alignment="auto"
+                                            variant="bare"
+                                            icon-size="x-small"
+                                            data-id={file.contentDocumentId}
+                                            onselect={handleRowAction}>
+                                            <lightning-menu-item value="download" label={label.Files_Action_Download}></lightning-menu-item>
+                                            <lightning-menu-item value="share" label={label.Files_Action_Share}></lightning-menu-item>
+                                            <template lwc:if={isContentDeliveryEnabled}>
+                                                <lightning-menu-item value="publiclink" label={label.Files_Action_Public_Link}></lightning-menu-item>
+                                            </template>
+                                            <lightning-menu-item value="details" label={label.Files_Action_View_Details}></lightning-menu-item>
+                                            <template lwc:if={file.hasEditAccess}>
+                                                <lightning-menu-item value="edit" label={label.Files_Action_Edit_Details}></lightning-menu-item>
+                                            </template>
+                                            <template lwc:if={file.hasDeleteAccess}>
+                                                <lightning-menu-item value="delete" label={label.Files_Action_Delete}></lightning-menu-item>
+                                            </template>
+                                            <template lwc:if={file.hasEditAccess}>
+                                                <lightning-menu-item value="remove" label={label.Files_Action_Remove}></lightning-menu-item>
+                                            </template>
+                                        </lightning-button-menu>
+                                    </div>
+                                    <div class="file-tile-body"
+                                         data-id={file.contentDocumentId}
+                                         onclick={handlePreviewFile}>
+                                        <lightning-icon icon-name={file.iconName} size="small"></lightning-icon>
+                                        <div class="file-tile-name" title={file.displayName}>{file.displayName}</div>
+                                        <div class="file-tile-size">{file.formattedSize}</div>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
-                    </template>
-                </div>
+                    </div>
+                </template>
                 <template lwc:if={showExpandButton}>
                     <div class="slds-p-around_small slds-text-align_center">
                         <lightning-button
@@ -92,9 +136,20 @@
                 label={label.Files_Upload_Label}
                 name="fileUploader"
                 record-id={recordId}
+                accept={acceptedFormats}
                 onuploadfinished={handleUploadFinished}
                 multiple>
             </lightning-file-upload>
+            <template lwc:if={hasUploadHints}>
+                <div class="upload-hints">
+                    <template lwc:if={uploadHintAllowed}>
+                        <span>{uploadHintAllowed}</span>
+                    </template>
+                    <template lwc:if={uploadHintMaxSize}>
+                        <span>{uploadHintMaxSize}</span>
+                    </template>
+                </div>
+            </template>
         </div>
     </lightning-card>
 </template>

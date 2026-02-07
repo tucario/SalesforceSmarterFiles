@@ -105,6 +105,28 @@ public with sharing class TucarioFileDownloadController {
     }
 
     /**
+     * Returns the file sizes (in bytes) for the specified ContentDocuments.
+     * Used for post-upload validation against a configurable maximum file size.
+     * @param contentDocumentIds List of ContentDocument IDs to query sizes for
+     * @return Map of ContentDocument ID to ContentSize in bytes
+     */
+    @AuraEnabled
+    public static Map<Id, Long> getUploadedFileSizes(List<Id> contentDocumentIds) {
+        Map<Id, Long> sizeMap = new Map<Id, Long>();
+        if (contentDocumentIds == null || contentDocumentIds.isEmpty()) {
+            return sizeMap;
+        }
+        for (ContentDocument doc : [
+            SELECT Id, ContentSize
+            FROM ContentDocument
+            WHERE Id IN :contentDocumentIds
+        ]) {
+            sizeMap.put(doc.Id, doc.ContentSize);
+        }
+        return sizeMap;
+    }
+
+    /**
      * Permanently deletes a file from Salesforce.
      * Cascades to all ContentDocumentLinks and ContentVersions.
      * @param contentDocumentId The ID of the ContentDocument to delete

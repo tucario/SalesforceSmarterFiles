@@ -241,7 +241,76 @@
         <value>File removed from record successfully.</value>
     </labels>
 
+    <!-- File component — upload validation labels (allowed extensions + size) -->
+    <labels>
+        <fullName>Tucario_Files_Upload_Size_Blocked_Single</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Single Oversized File Upload Blocked</shortDescription>
+        <value>&quot;{0}&quot; cannot be uploaded. File size ({1}) exceeds the {2} MB limit.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Upload_Size_Blocked_Multiple</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Multiple Oversized Files Upload Blocked</shortDescription>
+        <value>{0} file(s) exceed the {1} MB size limit: {2}</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Upload_Allowed_Blocked_Single</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Single Non-Allowed Extension Upload Blocked</shortDescription>
+        <value>&quot;{0}&quot; cannot be uploaded. Only {1} files are allowed on this page.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Upload_Allowed_Blocked_Multiple</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Multiple Non-Allowed Extensions Upload Blocked</shortDescription>
+        <value>{0} file(s) could not be uploaded: {1}. Only {2} files are allowed on this page.</value>
+    </labels>
+
+    <!-- File component — upload hint labels -->
+    <labels>
+        <fullName>Tucario_Files_Upload_Hint_Allowed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload Hint: Allowed File Types</shortDescription>
+        <value>Allowed types: {0}</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Upload_Hint_Max_Size</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload Hint: Max File Size</shortDescription>
+        <value>Max file size: {0} MB</value>
+    </labels>
+
+    <!-- File component — tile view labels -->
+    <labels>
+        <fullName>Tucario_Files_Tile_Action_Alt</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Tile Action Menu Accessibility Text</shortDescription>
+        <value>Actions for {0}</value>
+    </labels>
+
     <!-- Common labels -->
+    <labels>
+        <fullName>Tucario_Common_Upload_Size_Blocked</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload Size Blocked Toast Title</shortDescription>
+        <value>File Too Large</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Common_Upload_Validation</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload Validation Toast Title</shortDescription>
+        <value>Upload Validation</value>
+    </labels>
     <labels>
         <fullName>Tucario_Common_Confirm</fullName>
         <language>en_US</language>
