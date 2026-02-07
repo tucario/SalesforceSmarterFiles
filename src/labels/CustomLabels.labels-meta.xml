@@ -116,6 +116,45 @@
         <value>Upload failed: {0}</value>
     </labels>
 
+    <!-- File component — Apex error labels -->
+    <labels>
+        <fullName>Tucario_Files_Error_File_Data_Required</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload validation: missing file data</shortDescription>
+        <value>File data is required.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Error_File_Name_Required</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload validation: missing file name</shortDescription>
+        <value>File name is required.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Error_Record_Id_Required</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload validation: missing record ID</shortDescription>
+        <value>Record ID is required.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Error_File_Not_Found</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>File retrieval: not found or no access</shortDescription>
+        <value>File not found or access denied.</value>
+    </labels>
+
+    <!-- File component — display limit labels -->
+    <labels>
+        <fullName>Tucario_Files_Show_All</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Button to reveal remaining hidden files</shortDescription>
+        <value>Show All Files ({0} more)</value>
+    </labels>
+
     <!-- Common labels -->
     <labels>
         <fullName>Tucario_Common_Error</fullName>

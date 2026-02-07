@@ -20,7 +20,7 @@
 
             <template lwc:if={hasFiles}>
                 <div class="slds-scrollable_y" style="max-height: 400px;">
-                    <template for:each={files} for:item="file">
+                    <template for:each={displayedFiles} for:item="file">
                         <div key={file.contentDocumentId} class="file-list-item">
                             <div class="file-icon">
                                 <lightning-icon icon-name={file.iconName} size="small"></lightning-icon>
@@ -39,6 +39,15 @@
                         </div>
                     </template>
                 </div>
+                <template lwc:if={showExpandButton}>
+                    <div class="slds-p-around_small slds-text-align_center">
+                        <lightning-button
+                            label={expandButtonLabel}
+                            variant="base"
+                            onclick={handleShowAll}>
+                        </lightning-button>
+                    </div>
+                </template>
             </template>
 
             <template lwc:if={showEmptyState}>

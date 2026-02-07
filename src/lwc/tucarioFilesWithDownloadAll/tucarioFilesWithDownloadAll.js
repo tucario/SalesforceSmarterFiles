@@ -59,6 +59,18 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
     @api recordId;
     @api cardTitle = LABELS.Files_Card_Title;
 
+    _initialFilesDisplayed = 0;
+    isExpanded = false;
+
+    @api
+    get initialFilesDisplayed() {
+        return this._initialFilesDisplayed;
+    }
+    set initialFilesDisplayed(value) {
+        const parsed = parseInt(value, 10);
+        this._initialFilesDisplayed = (Number.isFinite(parsed) && parsed > 0) ? parsed : 0;
+    }
+
     _excludedExtensionsSet = new Set();
 
     @api
@@ -111,6 +123,29 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         return !this.hasFiles && !this.error && this.wiredFilesResult && this.wiredFilesResult.data !== undefined;
     }
 
+    get hasDisplayLimit() {
+        return this._initialFilesDisplayed > 0;
+    }
+
+    get displayedFiles() {
+        if (this.isExpanded || !this.hasDisplayLimit) {
+            return this.files;
+        }
+        return this.files.slice(0, this._initialFilesDisplayed);
+    }
+
+    get remainingFilesCount() {
+        return this.files.length - this._initialFilesDisplayed;
+    }
+
+    get showExpandButton() {
+        return this.hasDisplayLimit && !this.isExpanded && this.files.length > this._initialFilesDisplayed;
+    }
+
+    get expandButtonLabel() {
+        return formatLabel(LABELS.Files_Show_All, this.remainingFilesCount);
+    }
+
     get headerTitle() {
         return this.cardTitle + ' (' + this.fileCount + ')';
     }
@@ -144,6 +179,7 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
     wiredFiles(result) {
         this.wiredFilesResult = result;
         if (result.data) {
+            this.isExpanded = false;
             this.files = result.data.map(file => ({
                 ...file,
                 iconName: this.getIconName(file.fileType),
@@ -158,6 +194,10 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
             this.error = this.reduceErrors(result.error);
             this.files = [];
         }
+    }
+
+    handleShowAll() {
+        this.isExpanded = true;
     }
 
     handlePreviewFile(event) {
