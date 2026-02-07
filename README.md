@@ -9,13 +9,37 @@ A Lightning Web Component that enhances the native Salesforce file experience on
 - **Excluded file extensions** -- Optionally block specific file types from being uploaded (e.g., `docx,exe,pdf`), configured per page by an admin
 - **Mixed upload handling** -- When some selected files are blocked and others aren't, allowed files upload normally and the user gets a clear toast listing what was rejected
 
+## Deploy to Salesforce
+
+[![Deploy to Salesforce](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png)](https://githubsfdeploy.herokuapp.com?owner=tucario&repo=SalesforceSmarterFiles&ref=main)
+
+Click the button above to deploy this component directly to your Salesforce org. The deploy page lets you choose between **Sandbox** and **Production** as the target environment.
+
+### What gets deployed
+
+| Category | Components |
+|----------|-----------|
+| Apex Classes | FileDownloadController, TucarioMetadataExplorerController, TucarioMetadataService, TucarioSetupController |
+| Apex Test Classes | FileDownloadControllerTest, TucarioMetadataServiceTest, TucarioSetupControllerTest |
+| Lightning Web Components | filesWithDownloadAll, tucarioMetadataExplorer, tucarioSetupWizard, tucarioSetupWizardV2 |
+| Static Resources | JSZip (3.10.1) |
+
+> **Production note:** Production orgs may require Apex test execution during deployment. If the one-click deploy fails for this reason, use the CLI fallback below:
+>
+> ```bash
+> sf project deploy start --source-dir src --target-org <your-org-alias> --test-level RunLocalTests
+> ```
+
+> **Fallback:** If the deploy tool is unavailable, use the CLI commands in the [Installation](#installation) section below. Minimum org requirements: Lightning Experience enabled, API version 60.0+.
+
 ## Installation
 
 ### Prerequisites
 
 - Salesforce org with Lightning Experience enabled
-- Salesforce CLI (`sf`) installed locally
-- API version 60.0+
+- API version 60.0+ (Spring '24 or later)
+- "Modify All Data" or equivalent metadata deployment permissions
+- Salesforce CLI (`sf`) installed locally (for CLI deployment only)
 
 ### Deploy to an org
 
