@@ -16,7 +16,8 @@
                       default=""
                       description="Comma-separated list of file extensions to exclude (e.g., docx,exe,pdf)" />
             <property name="initialFilesDisplayed" type="Integer" label="Initial Files Displayed"
-                      description="Maximum number of files to display initially. Leave empty to show all files." />
+                      default="5"
+                      description="Maximum number of files to display initially. Set to 0 or leave empty to show all files." />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

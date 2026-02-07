@@ -6,7 +6,7 @@ import { getRecord } from 'lightning/uiRecordApi';
 import { loadScript } from 'lightning/platformResourceLoader';
 import getFilesList from '@salesforce/apex/TucarioFileDownloadController.getFilesList';
 import getFileContent from '@salesforce/apex/TucarioFileDownloadController.getFileContent';
-import uploadFile from '@salesforce/apex/TucarioFileDownloadController.uploadFile';
+import deleteFiles from '@salesforce/apex/TucarioFileDownloadController.deleteFiles';
 import JSZIP_RESOURCE from '@salesforce/resourceUrl/TucarioJSZip';
 import { LABELS, formatLabel } from 'c/tucarioLabels';
 
@@ -106,7 +106,7 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
     error;
     isLoading = false;
     isDownloading = false;
-    isUploading = false;
+    isProcessingUpload = false;
     jsZipInitialized = false;
     wiredFilesResult;
     recordName;
@@ -275,46 +275,39 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         }
     }
 
-    handleUploadFinished() {
-        refreshApex(this.wiredFilesResult);
-        this.showToast(LABELS.Common_Success, LABELS.Files_Upload_Success, 'success');
-    }
+    async handleUploadFinished(event) {
+        const uploadedFiles = event.detail.files;
 
-    async handleFilesSelected(event) {
-        const files = event.target.files;
-        if (!files || files.length === 0) {
-            return;
-        }
+        if (this.hasExcludedExtensions) {
+            const blocked = [];
 
-        const { allowed, blocked } = this.validateFiles(files);
+            for (const file of uploadedFiles) {
+                const ext = this.getFileExtension(file.name);
+                if (ext && this._excludedExtensionsSet.has(ext)) {
+                    blocked.push(file);
+                }
+            }
 
-        if (blocked.length > 0) {
-            this.showToast(LABELS.Common_Upload_Blocked, this.buildBlockedMessage(blocked), 'error');
-        }
+            if (blocked.length > 0) {
+                this.isProcessingUpload = true;
+                try {
+                    await deleteFiles({ contentDocumentIds: blocked.map(f => f.documentId) });
+                } catch (error) {
+                    this.showToast(LABELS.Common_Error, this.reduceErrors(error), 'error');
+                } finally {
+                    this.isProcessingUpload = false;
+                }
+                this.showToast(LABELS.Common_Upload_Blocked, this.buildBlockedMessage(blocked), 'error');
 
-        if (allowed.length > 0) {
-            await this.uploadFiles(allowed);
-        }
-
-        // Reset file input so the same file can be re-selected
-        event.target.value = '';
-    }
-
-    validateFiles(files) {
-        const allowed = [];
-        const blocked = [];
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const ext = this.getFileExtension(file.name);
-            if (ext && this._excludedExtensionsSet.has(ext)) {
-                blocked.push(file);
-            } else {
-                allowed.push(file);
+                if (blocked.length === uploadedFiles.length) {
+                    refreshApex(this.wiredFilesResult);
+                    return;
+                }
             }
         }
 
-        return { allowed, blocked };
+        refreshApex(this.wiredFilesResult);
+        this.showToast(LABELS.Common_Success, LABELS.Files_Upload_Success, 'success');
     }
 
     getFileExtension(fileName) {
@@ -324,55 +317,6 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
             return '';
         }
         return fileName.substring(dotIndex + 1).toLowerCase();
-    }
-
-    async uploadFiles(allowedFiles) {
-        this.isUploading = true;
-        const failedFiles = [];
-
-        try {
-            for (const file of allowedFiles) {
-                try {
-                    const base64Data = await this.readFileAsBase64(file);
-                    await uploadFile({
-                        base64Data: base64Data,
-                        fileName: file.name,
-                        recordId: this.recordId
-                    });
-                } catch (error) {
-                    failedFiles.push(file.name + ' (' + this.reduceErrors(error) + ')');
-                }
-            }
-
-            await refreshApex(this.wiredFilesResult);
-
-            if (failedFiles.length > 0) {
-                this.showToast(
-                    LABELS.Common_Upload_Errors,
-                    'Failed: ' + failedFiles.join(', '),
-                    'warning'
-                );
-            } else {
-                this.showToast(LABELS.Common_Success, formatLabel(LABELS.Files_Upload_Multi_Success, allowedFiles.length), 'success');
-            }
-        } catch (error) {
-            this.showToast(LABELS.Common_Error, formatLabel(LABELS.Files_Upload_Failed, this.reduceErrors(error)), 'error');
-        } finally {
-            this.isUploading = false;
-        }
-    }
-
-    readFileAsBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
-                const base64 = reader.result.split(',')[1];
-                resolve(base64);
-            };
-            reader.onerror = () => reject(new Error('Failed to read file: ' + file.name));
-            reader.readAsDataURL(file);
-        });
     }
 
     buildBlockedMessage(blockedFiles) {

@@ -10,6 +10,18 @@
 
 When **Excluded File Extensions** is empty or not set, all file types are allowed — the component behaves like a standard file uploader.
 
+### How Excluded Extensions Work
+
+File upload always uses the standard Salesforce `lightning-file-upload` component, which supports files of any size. When excluded extensions are configured, the component validates files **after** upload completes:
+
+1. User selects and uploads file(s) through the standard Salesforce file picker
+2. Once upload finishes, the component checks each file's extension against the excluded list
+3. Files with excluded extensions are **automatically deleted** from the org and the user sees an "Upload Blocked" error toast
+4. Files with allowed extensions are kept and a success toast is shown
+5. A spinner is displayed while blocked files are being removed
+
+This approach ensures full compatibility with large files (no size limit) while still enforcing extension restrictions.
+
 ## Extension Format
 
 The parser is flexible. All of these are equivalent:
