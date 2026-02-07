@@ -387,6 +387,58 @@ private class TucarioFileDownloadControllerTest {
         }
     }
 
+    // --- getUploadedFileSizes Tests ---
+
+    @IsTest
+    static void testGetUploadedFileSizes_WithFiles() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            ContentVersion cv = new ContentVersion(
+                Title = 'SizeTestFile',
+                PathOnClient = 'SizeTestFile.pdf',
+                VersionData = Blob.valueOf('Test content for size checking')
+            );
+            insert cv;
+
+            Id contentDocId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id].ContentDocumentId;
+
+            Test.startTest();
+            Map<Id, Long> sizeMap = TucarioFileDownloadController.getUploadedFileSizes(new List<Id>{ contentDocId });
+            Test.stopTest();
+
+            System.assertEquals(1, sizeMap.size(), 'Should return one entry');
+            System.assert(sizeMap.containsKey(contentDocId), 'Map should contain the ContentDocument ID');
+            System.assert(sizeMap.get(contentDocId) > 0, 'ContentSize should be greater than 0');
+        }
+    }
+
+    @IsTest
+    static void testGetUploadedFileSizes_EmptyList() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            Test.startTest();
+            Map<Id, Long> sizeMap = TucarioFileDownloadController.getUploadedFileSizes(new List<Id>());
+            Test.stopTest();
+
+            System.assertEquals(0, sizeMap.size(), 'Should return empty map for empty input');
+        }
+    }
+
+    @IsTest
+    static void testGetUploadedFileSizes_NullInput() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            Test.startTest();
+            Map<Id, Long> sizeMap = TucarioFileDownloadController.getUploadedFileSizes(null);
+            Test.stopTest();
+
+            System.assertEquals(0, sizeMap.size(), 'Should return empty map for null input');
+        }
+    }
+
     // --- uploadFile Tests ---
 
     @IsTest

@@ -18,6 +18,16 @@
             <property name="initialFilesDisplayed" type="Integer" label="Initial Files Displayed"
                       default="5"
                       description="Maximum number of files to display initially. Set to 0 or leave empty to show all files." />
+            <property name="allowedFileExtensions" type="String" label="Allowed File Extensions"
+                      default=""
+                      description="Comma-separated list of allowed file extensions (e.g., pdf,docx,png). Leave empty to allow all types." />
+            <property name="maxFileSize" type="Integer" label="Max File Size (MB)"
+                      default="0"
+                      description="Maximum file size in megabytes. Set to 0 or leave empty for no limit." />
+            <property name="displayMode" type="String" label="Display Mode"
+                      datasource="List, Tiles"
+                      default="List"
+                      description="Choose how files are displayed: List (vertical rows) or Tiles (grid of cards)" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

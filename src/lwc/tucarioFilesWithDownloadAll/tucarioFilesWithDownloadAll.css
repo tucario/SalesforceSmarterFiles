@@ -52,6 +52,48 @@
     margin-top: 0.125rem;
 }
 
+.file-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.file-tile {
+    position: relative;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    text-align: center;
+    transition: background-color 0.1s ease;
+    cursor: pointer;
+}
+
+.file-tile:hover {
+    background-color: #f3f3f3;
+}
+
+.file-tile-actions {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+}
+
+.file-tile-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    color: #0070d2;
+    margin-top: 0.5rem;
+}
+
+.file-tile-size {
+    font-size: 0.75rem;
+    color: #706e6b;
+    margin-top: 0.125rem;
+}
+
 .empty-state {
     text-align: center;
     padding: 2rem 1rem;
@@ -80,6 +122,15 @@
 .spinner-overlay {
     position: relative;
     min-height: 4rem;
+}
+
+.upload-hints {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    padding: 0.25rem 0;
+    font-size: 0.75rem;
+    color: #706e6b;
 }
 
 .upload-area {

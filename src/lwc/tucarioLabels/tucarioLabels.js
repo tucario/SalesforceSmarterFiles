@@ -31,6 +31,19 @@ import Files_Error_File_Name_Required from '@salesforce/label/c.Tucario_Files_Er
 import Files_Error_Record_Id_Required from '@salesforce/label/c.Tucario_Files_Error_Record_Id_Required';
 import Files_Error_File_Not_Found from '@salesforce/label/c.Tucario_Files_Error_File_Not_Found';
 
+// Dynamic labels — File component (upload validation: allowed extensions + size)
+import Files_Upload_Size_Blocked_Single from '@salesforce/label/c.Tucario_Files_Upload_Size_Blocked_Single';
+import Files_Upload_Size_Blocked_Multiple from '@salesforce/label/c.Tucario_Files_Upload_Size_Blocked_Multiple';
+import Files_Upload_Allowed_Blocked_Single from '@salesforce/label/c.Tucario_Files_Upload_Allowed_Blocked_Single';
+import Files_Upload_Allowed_Blocked_Multiple from '@salesforce/label/c.Tucario_Files_Upload_Allowed_Blocked_Multiple';
+
+// Dynamic labels — File component (upload hints)
+import Files_Upload_Hint_Allowed from '@salesforce/label/c.Tucario_Files_Upload_Hint_Allowed';
+import Files_Upload_Hint_Max_Size from '@salesforce/label/c.Tucario_Files_Upload_Hint_Max_Size';
+
+// Static labels — File component (tile view)
+import Files_Tile_Action_Alt from '@salesforce/label/c.Tucario_Files_Tile_Action_Alt';
+
 // Dynamic labels — File component
 import Files_Zip_Library_Error from '@salesforce/label/c.Tucario_Files_Zip_Library_Error';
 import Files_Download_Warnings from '@salesforce/label/c.Tucario_Files_Download_Warnings';
@@ -47,6 +60,8 @@ import Common_Error from '@salesforce/label/c.Tucario_Common_Error';
 import Common_Success from '@salesforce/label/c.Tucario_Common_Success';
 import Common_Warning from '@salesforce/label/c.Tucario_Common_Warning';
 import Common_Upload_Blocked from '@salesforce/label/c.Tucario_Common_Upload_Blocked';
+import Common_Upload_Size_Blocked from '@salesforce/label/c.Tucario_Common_Upload_Size_Blocked';
+import Common_Upload_Validation from '@salesforce/label/c.Tucario_Common_Upload_Validation';
 import Common_Download_Warnings from '@salesforce/label/c.Tucario_Common_Download_Warnings';
 import Common_Upload_Errors from '@salesforce/label/c.Tucario_Common_Upload_Errors';
 import Common_Unknown_Error from '@salesforce/label/c.Tucario_Common_Unknown_Error';
@@ -85,6 +100,19 @@ const LABELS = {
     Files_Error_Record_Id_Required,
     Files_Error_File_Not_Found,
 
+    // File component — upload validation (allowed extensions + size)
+    Files_Upload_Size_Blocked_Single,
+    Files_Upload_Size_Blocked_Multiple,
+    Files_Upload_Allowed_Blocked_Single,
+    Files_Upload_Allowed_Blocked_Multiple,
+
+    // File component — upload hints
+    Files_Upload_Hint_Allowed,
+    Files_Upload_Hint_Max_Size,
+
+    // File component — tile view
+    Files_Tile_Action_Alt,
+
     // File component — dynamic
     Files_Zip_Library_Error,
     Files_Download_Warnings,
@@ -101,6 +129,8 @@ const LABELS = {
     Common_Success,
     Common_Warning,
     Common_Upload_Blocked,
+    Common_Upload_Size_Blocked,
+    Common_Upload_Validation,
     Common_Download_Warnings,
     Common_Upload_Errors,
     Common_Unknown_Error

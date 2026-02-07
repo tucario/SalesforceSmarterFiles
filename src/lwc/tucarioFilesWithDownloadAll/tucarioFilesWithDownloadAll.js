@@ -8,6 +8,7 @@ import { loadScript } from 'lightning/platformResourceLoader';
 import getFilesList from '@salesforce/apex/TucarioFileDownloadController.getFilesList';
 import getFileContent from '@salesforce/apex/TucarioFileDownloadController.getFileContent';
 import deleteFiles from '@salesforce/apex/TucarioFileDownloadController.deleteFiles';
+import getUploadedFileSizes from '@salesforce/apex/TucarioFileDownloadController.getUploadedFileSizes';
 import deleteFile from '@salesforce/apex/TucarioFileDownloadController.deleteFile';
 import removeFileFromRecord from '@salesforce/apex/TucarioFileDownloadController.removeFileFromRecord';
 import isContentDeliveryEnabledApex from '@salesforce/apex/TucarioFileDownloadController.isContentDeliveryEnabled';
@@ -102,6 +103,82 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         return this._excludedExtensionsSet.size > 0;
     }
 
+    _allowedExtensionsSet = new Set();
+
+    @api
+    get allowedFileExtensions() {
+        return this._allowedFileExtensions;
+    }
+    set allowedFileExtensions(value) {
+        this._allowedFileExtensions = value;
+        if (!value || !value.trim()) {
+            this._allowedExtensionsSet = new Set();
+        } else {
+            this._allowedExtensionsSet = new Set(
+                value.split(',')
+                    .map(ext => ext.trim().toLowerCase().replace(/^\.+/, ''))
+                    .filter(ext => ext.length > 0)
+            );
+        }
+    }
+
+    get hasAllowedExtensions() {
+        return this._allowedExtensionsSet.size > 0;
+    }
+
+    get acceptedFormats() {
+        if (this._allowedExtensionsSet.size === 0) {
+            return undefined;
+        }
+        return [...this._allowedExtensionsSet].map(ext => '.' + ext);
+    }
+
+    _maxFileSize = 0;
+    _maxFileSizeBytes = 0;
+
+    @api
+    get maxFileSize() {
+        return this._maxFileSize;
+    }
+    set maxFileSize(value) {
+        const parsed = parseInt(value, 10);
+        this._maxFileSize = (Number.isFinite(parsed) && parsed > 0) ? parsed : 0;
+        this._maxFileSizeBytes = this._maxFileSize * 1024 * 1024;
+    }
+
+    get hasMaxFileSize() {
+        return this._maxFileSize > 0;
+    }
+
+    get hasUploadHints() {
+        return this.hasAllowedExtensions || this.hasMaxFileSize;
+    }
+
+    get uploadHintAllowed() {
+        if (!this.hasAllowedExtensions) {
+            return null;
+        }
+        const list = [...this._allowedExtensionsSet].map(ext => '.' + ext).join(', ');
+        return formatLabel(LABELS.Files_Upload_Hint_Allowed, list);
+    }
+
+    get uploadHintMaxSize() {
+        if (!this.hasMaxFileSize) {
+            return null;
+        }
+        return formatLabel(LABELS.Files_Upload_Hint_Max_Size, this._maxFileSize);
+    }
+
+    @api displayMode = 'List';
+
+    get isTileView() {
+        return this.displayMode === 'Tiles';
+    }
+
+    get isListView() {
+        return !this.isTileView;
+    }
+
     get label() {
         return LABELS;
     }
@@ -185,15 +262,19 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         this.wiredFilesResult = result;
         if (result.data) {
             this.isExpanded = false;
-            this.files = result.data.map(file => ({
-                ...file,
-                iconName: this.getIconName(file.fileType),
-                formattedSize: this.formatFileSize(file.contentSize),
-                formattedDate: this.formatDate(file.lastModifiedDate),
-                displayName: file.fileExtension
+            this.files = result.data.map(file => {
+                const displayName = file.fileExtension
                     ? file.title + '.' + file.fileExtension
-                    : file.title
-            }));
+                    : file.title;
+                return {
+                    ...file,
+                    iconName: this.getIconName(file.fileType),
+                    formattedSize: this.formatFileSize(file.contentSize),
+                    formattedDate: this.formatDate(file.lastModifiedDate),
+                    displayName,
+                    tileActionAlt: formatLabel(LABELS.Files_Tile_Action_Alt, displayName)
+                };
+            });
             this.error = undefined;
         } else if (result.error) {
             this.error = this.reduceErrors(result.error);
@@ -323,32 +404,86 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
 
     async handleUploadFinished(event) {
         const uploadedFiles = event.detail.files;
+        const extensionBlocked = [];
+        const sizeCandidates = [];
 
-        if (this.hasExcludedExtensions) {
-            const blocked = [];
+        // Step 1: Extension validation (allowed + excluded)
+        for (const file of uploadedFiles) {
+            const ext = this.getFileExtension(file.name);
+            let blocked = false;
 
-            for (const file of uploadedFiles) {
-                const ext = this.getFileExtension(file.name);
-                if (ext && this._excludedExtensionsSet.has(ext)) {
-                    blocked.push(file);
-                }
+            if (this.hasAllowedExtensions && ext && !this._allowedExtensionsSet.has(ext)) {
+                blocked = true;
+            }
+            if (!blocked && this.hasExcludedExtensions && ext && this._excludedExtensionsSet.has(ext)) {
+                blocked = true;
+            }
+            // Files without an extension: block only if allowed list is configured (no match possible)
+            if (!blocked && this.hasAllowedExtensions && !ext) {
+                blocked = true;
             }
 
-            if (blocked.length > 0) {
-                this.isProcessingUpload = true;
-                try {
-                    await deleteFiles({ contentDocumentIds: blocked.map(f => f.documentId) });
-                } catch (error) {
-                    this.showToast(LABELS.Common_Error, this.reduceErrors(error), 'error');
-                } finally {
-                    this.isProcessingUpload = false;
-                }
-                this.showToast(LABELS.Common_Upload_Blocked, this.buildBlockedMessage(blocked), 'error');
+            if (blocked) {
+                extensionBlocked.push(file);
+            } else {
+                sizeCandidates.push(file);
+            }
+        }
 
-                if (blocked.length === uploadedFiles.length) {
-                    refreshApex(this.wiredFilesResult);
-                    return;
+        // Step 2: Size validation for files that passed extension checks
+        const sizeBlocked = [];
+        if (this.hasMaxFileSize && sizeCandidates.length > 0) {
+            try {
+                const candidateDocIds = sizeCandidates.map(f => f.documentId);
+                const sizeMap = await getUploadedFileSizes({ contentDocumentIds: candidateDocIds });
+                for (const file of sizeCandidates) {
+                    const fileSize = sizeMap[file.documentId];
+                    if (fileSize && fileSize > this._maxFileSizeBytes) {
+                        file._fileSize = fileSize;
+                        sizeBlocked.push(file);
+                    }
                 }
+            } catch (error) {
+                console.error('Error checking file sizes:', this.reduceErrors(error));
+            }
+        }
+
+        // Step 3: Delete all blocked files in a single call
+        const allBlocked = [...extensionBlocked, ...sizeBlocked];
+        if (allBlocked.length > 0) {
+            this.isProcessingUpload = true;
+            try {
+                await deleteFiles({ contentDocumentIds: allBlocked.map(f => f.documentId) });
+            } catch (error) {
+                this.showToast(LABELS.Common_Error, this.reduceErrors(error), 'error');
+            } finally {
+                this.isProcessingUpload = false;
+            }
+
+            // Step 4: Show appropriate error toasts
+            const hasExtBlocked = extensionBlocked.length > 0;
+            const hasSizeBlocked = sizeBlocked.length > 0;
+
+            if (hasExtBlocked && hasSizeBlocked) {
+                // Combined rejection — use combined toast title
+                const extMsg = this.buildAllowedBlockedMessage(extensionBlocked);
+                const sizeMsg = this.buildSizeBlockedMessage(sizeBlocked);
+                this.showToast(LABELS.Common_Upload_Validation, extMsg + ' ' + sizeMsg, 'error');
+            } else if (hasExtBlocked) {
+                // Extension-only rejection
+                if (this.hasAllowedExtensions) {
+                    this.showToast(LABELS.Common_Upload_Blocked, this.buildAllowedBlockedMessage(extensionBlocked), 'error');
+                } else {
+                    this.showToast(LABELS.Common_Upload_Blocked, this.buildBlockedMessage(extensionBlocked), 'error');
+                }
+            } else if (hasSizeBlocked) {
+                // Size-only rejection
+                this.showToast(LABELS.Common_Upload_Size_Blocked, this.buildSizeBlockedMessage(sizeBlocked), 'error');
+            }
+
+            if (allBlocked.length === uploadedFiles.length) {
+                refreshApex(this.wiredFilesResult);
+                return;
             }
         }
 
@@ -376,6 +511,25 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
             return file.name + ' (.' + ext + ')';
         }).join(', ');
         return formatLabel(LABELS.Files_Upload_Blocked_Multiple, blockedFiles.length, details);
+    }
+
+    buildAllowedBlockedMessage(blockedFiles) {
+        const allowedList = [...this._allowedExtensionsSet].map(ext => '.' + ext).join(', ');
+        if (blockedFiles.length === 1) {
+            return formatLabel(LABELS.Files_Upload_Allowed_Blocked_Single, blockedFiles[0].name, allowedList);
+        }
+        const names = blockedFiles.map(f => f.name).join(', ');
+        return formatLabel(LABELS.Files_Upload_Allowed_Blocked_Multiple, blockedFiles.length, names, allowedList);
+    }
+
+    buildSizeBlockedMessage(blockedFiles) {
+        if (blockedFiles.length === 1) {
+            const file = blockedFiles[0];
+            const formattedSize = this.formatFileSize(file._fileSize);
+            return formatLabel(LABELS.Files_Upload_Size_Blocked_Single, file.name, formattedSize, this._maxFileSize);
+        }
+        const names = blockedFiles.map(f => f.name).join(', ');
+        return formatLabel(LABELS.Files_Upload_Size_Blocked_Multiple, blockedFiles.length, this._maxFileSize, names);
     }
 
     // --- Row Action Handlers ---
