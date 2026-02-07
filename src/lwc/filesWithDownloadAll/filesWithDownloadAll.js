@@ -6,6 +6,7 @@ import { getRecord } from 'lightning/uiRecordApi';
 import { loadScript } from 'lightning/platformResourceLoader';
 import getFilesList from '@salesforce/apex/FileDownloadController.getFilesList';
 import getFileContent from '@salesforce/apex/FileDownloadController.getFileContent';
+import uploadFile from '@salesforce/apex/FileDownloadController.uploadFile';
 import JSZIP_RESOURCE from '@salesforce/resourceUrl/JSZip';
 
 const FILE_TYPE_ICON_MAP = {
@@ -57,10 +58,38 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
     @api recordId;
     @api cardTitle = 'Files';
 
+    _excludedExtensionsSet = new Set();
+
+    @api
+    get excludedFileExtensions() {
+        return this._excludedFileExtensions;
+    }
+    set excludedFileExtensions(value) {
+        this._excludedFileExtensions = value;
+        if (!value || !value.trim()) {
+            this._excludedExtensionsSet = new Set();
+        } else {
+            this._excludedExtensionsSet = new Set(
+                value.split(',')
+                    .map(ext => ext.trim().toLowerCase().replace(/^\.+/, ''))
+                    .filter(ext => ext.length > 0)
+            );
+        }
+    }
+
+    get excludedExtensionsSet() {
+        return this._excludedExtensionsSet;
+    }
+
+    get hasExcludedExtensions() {
+        return this._excludedExtensionsSet.size > 0;
+    }
+
     files = [];
     error;
     isLoading = false;
     isDownloading = false;
+    isUploading = false;
     jsZipInitialized = false;
     wiredFilesResult;
     recordName;
@@ -204,6 +233,114 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
     handleUploadFinished() {
         refreshApex(this.wiredFilesResult);
         this.showToast('Success', 'File(s) uploaded successfully.', 'success');
+    }
+
+    async handleFilesSelected(event) {
+        const files = event.target.files;
+        if (!files || files.length === 0) {
+            return;
+        }
+
+        const { allowed, blocked } = this.validateFiles(files);
+
+        if (blocked.length > 0) {
+            this.showToast('Upload Blocked', this.buildBlockedMessage(blocked), 'error');
+        }
+
+        if (allowed.length > 0) {
+            await this.uploadFiles(allowed);
+        }
+
+        // Reset file input so the same file can be re-selected
+        event.target.value = '';
+    }
+
+    validateFiles(files) {
+        const allowed = [];
+        const blocked = [];
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const ext = this.getFileExtension(file.name);
+            if (ext && this._excludedExtensionsSet.has(ext)) {
+                blocked.push(file);
+            } else {
+                allowed.push(file);
+            }
+        }
+
+        return { allowed, blocked };
+    }
+
+    getFileExtension(fileName) {
+        if (!fileName) return '';
+        const dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex === -1 || dotIndex === fileName.length - 1) {
+            return '';
+        }
+        return fileName.substring(dotIndex + 1).toLowerCase();
+    }
+
+    async uploadFiles(allowedFiles) {
+        this.isUploading = true;
+        const failedFiles = [];
+
+        try {
+            for (const file of allowedFiles) {
+                try {
+                    const base64Data = await this.readFileAsBase64(file);
+                    await uploadFile({
+                        base64Data: base64Data,
+                        fileName: file.name,
+                        recordId: this.recordId
+                    });
+                } catch (error) {
+                    failedFiles.push(file.name + ' (' + this.reduceErrors(error) + ')');
+                }
+            }
+
+            await refreshApex(this.wiredFilesResult);
+
+            if (failedFiles.length > 0) {
+                this.showToast(
+                    'Upload Complete (with errors)',
+                    'Failed: ' + failedFiles.join(', '),
+                    'warning'
+                );
+            } else {
+                this.showToast('Success', allowedFiles.length + ' file(s) uploaded successfully.', 'success');
+            }
+        } catch (error) {
+            this.showToast('Error', 'Upload failed: ' + this.reduceErrors(error), 'error');
+        } finally {
+            this.isUploading = false;
+        }
+    }
+
+    readFileAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
+                const base64 = reader.result.split(',')[1];
+                resolve(base64);
+            };
+            reader.onerror = () => reject(new Error('Failed to read file: ' + file.name));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    buildBlockedMessage(blockedFiles) {
+        if (blockedFiles.length === 1) {
+            const file = blockedFiles[0];
+            const ext = this.getFileExtension(file.name);
+            return '"' + file.name + '" cannot be uploaded. The .' + ext + ' file type is not allowed on this page.';
+        }
+        const details = blockedFiles.map(file => {
+            const ext = this.getFileExtension(file.name);
+            return file.name + ' (.' + ext + ')';
+        }).join(', ');
+        return blockedFiles.length + ' file(s) could not be uploaded: ' + details + '. These file types are not allowed on this page.';
     }
 
     // --- Helpers ---

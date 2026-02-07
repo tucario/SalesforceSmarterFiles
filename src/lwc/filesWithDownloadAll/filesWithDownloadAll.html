@@ -48,14 +48,30 @@
             </template>
         </div>
 
-        <div slot="footer" class="slds-p-horizontal_small">
-            <lightning-file-upload
-                label="Upload Files"
-                name="fileUploader"
-                record-id={recordId}
-                onuploadfinished={handleUploadFinished}
-                multiple>
-            </lightning-file-upload>
+        <div slot="footer" class="upload-area">
+            <template lwc:if={isUploading}>
+                <div class="slds-spinner_container">
+                    <lightning-spinner alternative-text="Uploading files" size="small"></lightning-spinner>
+                </div>
+            </template>
+            <template lwc:if={hasExcludedExtensions}>
+                <lightning-input
+                    type="file"
+                    label="Upload Files"
+                    multiple
+                    disabled={isUploading}
+                    onchange={handleFilesSelected}>
+                </lightning-input>
+            </template>
+            <template lwc:else>
+                <lightning-file-upload
+                    label="Upload Files"
+                    name="fileUploader"
+                    record-id={recordId}
+                    onuploadfinished={handleUploadFinished}
+                    multiple>
+                </lightning-file-upload>
+            </template>
         </div>
     </lightning-card>
 </template>
