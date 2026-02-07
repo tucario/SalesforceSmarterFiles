@@ -122,6 +122,19 @@ public with sharing class TucarioFileDownloadController {
     }
 
     /**
+     * Deletes ContentDocuments by their IDs.
+     * Used to remove files that were uploaded with excluded extensions.
+     * @param contentDocumentIds List of ContentDocument IDs to delete
+     */
+    @AuraEnabled
+    public static void deleteFiles(List<Id> contentDocumentIds) {
+        if (contentDocumentIds == null || contentDocumentIds.isEmpty()) {
+            return;
+        }
+        delete [SELECT Id FROM ContentDocument WHERE Id IN :contentDocumentIds];
+    }
+
+    /**
      * Retrieves the content of a specific file version for download.
      * Returns the file name, base64-encoded data, and size.
      * @param contentVersionId The ID of the ContentVersion to retrieve

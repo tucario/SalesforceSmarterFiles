@@ -201,6 +201,55 @@ private class TucarioFileDownloadControllerTest {
         }
     }
 
+    // --- deleteFiles Tests ---
+
+    @IsTest
+    static void testDeleteFiles_Success() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            ContentVersion cv = new ContentVersion(
+                Title = 'ToDelete',
+                PathOnClient = 'ToDelete.txt',
+                VersionData = Blob.valueOf('delete me')
+            );
+            insert cv;
+
+            Id contentDocId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id].ContentDocumentId;
+
+            Test.startTest();
+            TucarioFileDownloadController.deleteFiles(new List<Id>{ contentDocId });
+            Test.stopTest();
+
+            List<ContentDocument> remaining = [SELECT Id FROM ContentDocument WHERE Id = :contentDocId];
+            System.assertEquals(0, remaining.size(), 'ContentDocument should be deleted');
+        }
+    }
+
+    @IsTest
+    static void testDeleteFiles_EmptyList() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            Test.startTest();
+            TucarioFileDownloadController.deleteFiles(new List<Id>());
+            Test.stopTest();
+            // No exception expected
+        }
+    }
+
+    @IsTest
+    static void testDeleteFiles_NullList() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            Test.startTest();
+            TucarioFileDownloadController.deleteFiles(null);
+            Test.stopTest();
+            // No exception expected
+        }
+    }
+
     // --- uploadFile Tests ---
 
     @IsTest

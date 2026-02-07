@@ -58,29 +58,18 @@
         </div>
 
         <div slot="footer" class="upload-area">
-            <template lwc:if={isUploading}>
-                <div class="slds-spinner_container">
+            <template lwc:if={isProcessingUpload}>
+                <div class="slds-p-around_small slds-text-align_center">
                     <lightning-spinner alternative-text={label.Files_Uploading} size="small"></lightning-spinner>
                 </div>
             </template>
-            <template lwc:if={hasExcludedExtensions}>
-                <lightning-input
-                    type="file"
-                    label={label.Files_Upload_Label}
-                    multiple
-                    disabled={isUploading}
-                    onchange={handleFilesSelected}>
-                </lightning-input>
-            </template>
-            <template lwc:else>
-                <lightning-file-upload
-                    label={label.Files_Upload_Label}
-                    name="fileUploader"
-                    record-id={recordId}
-                    onuploadfinished={handleUploadFinished}
-                    multiple>
-                </lightning-file-upload>
-            </template>
+            <lightning-file-upload
+                label={label.Files_Upload_Label}
+                name="fileUploader"
+                record-id={recordId}
+                onuploadfinished={handleUploadFinished}
+                multiple>
+            </lightning-file-upload>
         </div>
     </lightning-card>
 </template>
