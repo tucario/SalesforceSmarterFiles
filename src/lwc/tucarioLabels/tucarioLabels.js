@@ -8,6 +8,15 @@ import Files_Empty_State from '@salesforce/label/c.Tucario_Files_Empty_State';
 import Files_No_Archive_Warning from '@salesforce/label/c.Tucario_Files_No_Archive_Warning';
 import Files_Upload_Success from '@salesforce/label/c.Tucario_Files_Upload_Success';
 
+// Static labels — File component (display limit)
+import Files_Show_All from '@salesforce/label/c.Tucario_Files_Show_All';
+
+// Static labels — File component (Apex error labels)
+import Files_Error_File_Data_Required from '@salesforce/label/c.Tucario_Files_Error_File_Data_Required';
+import Files_Error_File_Name_Required from '@salesforce/label/c.Tucario_Files_Error_File_Name_Required';
+import Files_Error_Record_Id_Required from '@salesforce/label/c.Tucario_Files_Error_Record_Id_Required';
+import Files_Error_File_Not_Found from '@salesforce/label/c.Tucario_Files_Error_File_Not_Found';
+
 // Dynamic labels — File component
 import Files_Zip_Library_Error from '@salesforce/label/c.Tucario_Files_Zip_Library_Error';
 import Files_Download_Warnings from '@salesforce/label/c.Tucario_Files_Download_Warnings';
@@ -37,6 +46,15 @@ const LABELS = {
     Files_Empty_State,
     Files_No_Archive_Warning,
     Files_Upload_Success,
+
+    // File component — display limit
+    Files_Show_All,
+
+    // File component — Apex error labels
+    Files_Error_File_Data_Required,
+    Files_Error_File_Name_Required,
+    Files_Error_Record_Id_Required,
+    Files_Error_File_Not_Found,
 
     // File component — dynamic
     Files_Zip_Library_Error,

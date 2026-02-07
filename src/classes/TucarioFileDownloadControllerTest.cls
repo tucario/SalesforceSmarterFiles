@@ -194,7 +194,7 @@ private class TucarioFileDownloadControllerTest {
                 TucarioFileDownloadController.getFileContent(fakeId);
                 System.assert(false, 'Should have thrown AuraHandledException for invalid content version ID');
             } catch (AuraHandledException e) {
-                System.assertEquals('File not found or access denied.', e.getMessage(),
+                System.assertEquals(System.Label.Tucario_Files_Error_File_Not_Found, e.getMessage(),
                     'Exception message should indicate file not found or access denied');
             }
             Test.stopTest();

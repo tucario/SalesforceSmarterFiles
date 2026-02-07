@@ -1,5 +1,8 @@
 public with sharing class TucarioFileDownloadController {
 
+    /**
+     * Wrapper class containing metadata for a file attached to a record.
+     */
     public class FileInfo {
         @AuraEnabled public Id contentDocumentId;
         @AuraEnabled public String title;
@@ -10,12 +13,21 @@ public with sharing class TucarioFileDownloadController {
         @AuraEnabled public String fileExtension;
     }
 
+    /**
+     * Wrapper class containing file content data for download operations.
+     */
     public class FileContent {
         @AuraEnabled public String fileName;
         @AuraEnabled public String base64Data;
         @AuraEnabled public Long contentSize;
     }
 
+    /**
+     * Retrieves all files linked to a record, sorted by last modified date (newest first).
+     * Returns file metadata including title, type, size, and version information.
+     * @param recordId The ID of the record to retrieve files for
+     * @return List of FileInfo objects containing file metadata, empty list if no files found
+     */
     @AuraEnabled(cacheable=true)
     public static List<FileInfo> getFilesList(Id recordId) {
         List<FileInfo> fileInfoList = new List<FileInfo>();
@@ -71,16 +83,25 @@ public with sharing class TucarioFileDownloadController {
         return fileInfoList;
     }
 
+    /**
+     * Uploads a file and links it to the specified record.
+     * Creates a ContentVersion from base64-encoded data and a ContentDocumentLink to associate it.
+     * @param base64Data Base64-encoded file content
+     * @param fileName Full filename including extension (e.g., "report.pdf")
+     * @param recordId The ID of the record to link the file to
+     * @return The ContentVersion ID of the created file
+     * @throws AuraHandledException if base64Data, fileName, or recordId is blank/null
+     */
     @AuraEnabled
     public static Id uploadFile(String base64Data, String fileName, Id recordId) {
         if (String.isBlank(base64Data)) {
-            throw new AuraHandledException('File data is required.');
+            throw new AuraHandledException(System.Label.Tucario_Files_Error_File_Data_Required);
         }
         if (String.isBlank(fileName)) {
-            throw new AuraHandledException('File name is required.');
+            throw new AuraHandledException(System.Label.Tucario_Files_Error_File_Name_Required);
         }
         if (recordId == null) {
-            throw new AuraHandledException('Record ID is required.');
+            throw new AuraHandledException(System.Label.Tucario_Files_Error_Record_Id_Required);
         }
 
         ContentVersion cv = new ContentVersion();
@@ -100,6 +121,13 @@ public with sharing class TucarioFileDownloadController {
         return cv.Id;
     }
 
+    /**
+     * Retrieves the content of a specific file version for download.
+     * Returns the file name, base64-encoded data, and size.
+     * @param contentVersionId The ID of the ContentVersion to retrieve
+     * @return FileContent object with fileName, base64Data, and contentSize
+     * @throws AuraHandledException if the file is not found or the user lacks access
+     */
     @AuraEnabled
     public static FileContent getFileContent(Id contentVersionId) {
         List<ContentVersion> versions = [
@@ -110,8 +138,8 @@ public with sharing class TucarioFileDownloadController {
         ];
 
         if (versions.isEmpty()) {
-            AuraHandledException e = new AuraHandledException('File not found or access denied.');
-            e.setMessage('File not found or access denied.');
+            AuraHandledException e = new AuraHandledException(System.Label.Tucario_Files_Error_File_Not_Found);
+            e.setMessage(System.Label.Tucario_Files_Error_File_Not_Found);
             throw e;
         }
 
