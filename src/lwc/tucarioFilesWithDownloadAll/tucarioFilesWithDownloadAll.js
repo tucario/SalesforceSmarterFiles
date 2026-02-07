@@ -1,12 +1,16 @@
 import { LightningElement, api, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import LightningConfirm from 'lightning/confirm';
 import { refreshApex } from '@salesforce/apex';
 import { getRecord } from 'lightning/uiRecordApi';
 import { loadScript } from 'lightning/platformResourceLoader';
 import getFilesList from '@salesforce/apex/TucarioFileDownloadController.getFilesList';
 import getFileContent from '@salesforce/apex/TucarioFileDownloadController.getFileContent';
 import deleteFiles from '@salesforce/apex/TucarioFileDownloadController.deleteFiles';
+import deleteFile from '@salesforce/apex/TucarioFileDownloadController.deleteFile';
+import removeFileFromRecord from '@salesforce/apex/TucarioFileDownloadController.removeFileFromRecord';
+import isContentDeliveryEnabledApex from '@salesforce/apex/TucarioFileDownloadController.isContentDeliveryEnabled';
 import JSZIP_RESOURCE from '@salesforce/resourceUrl/TucarioJSZip';
 import { LABELS, formatLabel } from 'c/tucarioLabels';
 
@@ -106,6 +110,7 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
     error;
     isLoading = false;
     isDownloading = false;
+    isContentDeliveryEnabled = false;
     isProcessingUpload = false;
     jsZipInitialized = false;
     wiredFilesResult;
@@ -196,8 +201,49 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         }
     }
 
+    @wire(isContentDeliveryEnabledApex)
+    wiredContentDelivery({ data, error }) {
+        if (data !== undefined) {
+            this.isContentDeliveryEnabled = data;
+        } else if (error) {
+            this.isContentDeliveryEnabled = false;
+        }
+    }
+
     handleShowAll() {
         this.isExpanded = true;
+    }
+
+    handleRowAction(event) {
+        const action = event.detail.value;
+        const contentDocumentId = event.currentTarget.dataset.id;
+        const file = this.files.find(f => f.contentDocumentId === contentDocumentId);
+
+        switch (action) {
+            case 'download':
+                this.handleDownloadSingle(file);
+                break;
+            case 'share':
+                this.navigateToFileDetail(contentDocumentId);
+                break;
+            case 'publiclink':
+                this.navigateToContentDelivery(file.versionId);
+                break;
+            case 'details':
+                this.navigateToFileDetail(contentDocumentId);
+                break;
+            case 'edit':
+                this.navigateToFileEdit(contentDocumentId);
+                break;
+            case 'delete':
+                this.confirmAndDeleteFile(contentDocumentId);
+                break;
+            case 'remove':
+                this.confirmAndRemoveFile(contentDocumentId);
+                break;
+            default:
+                break;
+        }
     }
 
     handlePreviewFile(event) {
@@ -330,6 +376,89 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
             return file.name + ' (.' + ext + ')';
         }).join(', ');
         return formatLabel(LABELS.Files_Upload_Blocked_Multiple, blockedFiles.length, details);
+    }
+
+    // --- Row Action Handlers ---
+
+    async handleDownloadSingle(file) {
+        try {
+            const content = await getFileContent({ contentVersionId: file.versionId });
+            const byteCharacters = atob(content.base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray]);
+            this.downloadBlob(blob, content.fileName);
+        } catch (error) {
+            this.showToast(LABELS.Common_Error, this.reduceErrors(error), 'error');
+        }
+    }
+
+    navigateToFileDetail(contentDocumentId) {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: contentDocumentId,
+                objectApiName: 'ContentDocument',
+                actionName: 'view'
+            }
+        });
+    }
+
+    navigateToFileEdit(contentDocumentId) {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: contentDocumentId,
+                objectApiName: 'ContentDocument',
+                actionName: 'edit'
+            }
+        });
+    }
+
+    navigateToContentDelivery(versionId) {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: '/lightning/o/ContentDistribution/new?cvId=' + versionId
+            }
+        });
+    }
+
+    async confirmAndDeleteFile(contentDocumentId) {
+        const result = await LightningConfirm.open({
+            message: LABELS.Files_Delete_Confirm,
+            variant: 'headerless',
+            label: LABELS.Common_Confirm
+        });
+        if (result) {
+            try {
+                await deleteFile({ contentDocumentId });
+                this.showToast(LABELS.Common_Success, LABELS.Files_Delete_Success, 'success');
+                await refreshApex(this.wiredFilesResult);
+            } catch (error) {
+                this.showToast(LABELS.Common_Error, this.reduceErrors(error), 'error');
+            }
+        }
+    }
+
+    async confirmAndRemoveFile(contentDocumentId) {
+        const result = await LightningConfirm.open({
+            message: LABELS.Files_Remove_Confirm,
+            variant: 'headerless',
+            label: LABELS.Common_Confirm
+        });
+        if (result) {
+            try {
+                await removeFileFromRecord({ contentDocumentId, recordId: this.recordId });
+                this.showToast(LABELS.Common_Success, LABELS.Files_Remove_Success, 'success');
+                await refreshApex(this.wiredFilesResult);
+            } catch (error) {
+                this.showToast(LABELS.Common_Error, this.reduceErrors(error), 'error');
+            }
+        }
     }
 
     // --- Helpers ---

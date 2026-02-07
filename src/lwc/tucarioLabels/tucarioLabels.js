@@ -8,6 +8,20 @@ import Files_Empty_State from '@salesforce/label/c.Tucario_Files_Empty_State';
 import Files_No_Archive_Warning from '@salesforce/label/c.Tucario_Files_No_Archive_Warning';
 import Files_Upload_Success from '@salesforce/label/c.Tucario_Files_Upload_Success';
 
+// Static labels — File component (row actions)
+import Files_Action_Download from '@salesforce/label/c.Tucario_Files_Action_Download';
+import Files_Action_Share from '@salesforce/label/c.Tucario_Files_Action_Share';
+import Files_Action_Public_Link from '@salesforce/label/c.Tucario_Files_Action_Public_Link';
+import Files_Action_View_Details from '@salesforce/label/c.Tucario_Files_Action_View_Details';
+import Files_Action_Edit_Details from '@salesforce/label/c.Tucario_Files_Action_Edit_Details';
+import Files_Action_Delete from '@salesforce/label/c.Tucario_Files_Action_Delete';
+import Files_Action_Remove from '@salesforce/label/c.Tucario_Files_Action_Remove';
+import Files_Action_Menu_Alt from '@salesforce/label/c.Tucario_Files_Action_Menu_Alt';
+import Files_Delete_Confirm from '@salesforce/label/c.Tucario_Files_Delete_Confirm';
+import Files_Remove_Confirm from '@salesforce/label/c.Tucario_Files_Remove_Confirm';
+import Files_Delete_Success from '@salesforce/label/c.Tucario_Files_Delete_Success';
+import Files_Remove_Success from '@salesforce/label/c.Tucario_Files_Remove_Success';
+
 // Static labels — File component (display limit)
 import Files_Show_All from '@salesforce/label/c.Tucario_Files_Show_All';
 
@@ -28,6 +42,7 @@ import Files_Upload_Blocked_Multiple from '@salesforce/label/c.Tucario_Files_Upl
 import Files_Upload_Failed from '@salesforce/label/c.Tucario_Files_Upload_Failed';
 
 // Common labels
+import Common_Confirm from '@salesforce/label/c.Tucario_Common_Confirm';
 import Common_Error from '@salesforce/label/c.Tucario_Common_Error';
 import Common_Success from '@salesforce/label/c.Tucario_Common_Success';
 import Common_Warning from '@salesforce/label/c.Tucario_Common_Warning';
@@ -46,6 +61,20 @@ const LABELS = {
     Files_Empty_State,
     Files_No_Archive_Warning,
     Files_Upload_Success,
+
+    // File component — row actions
+    Files_Action_Download,
+    Files_Action_Share,
+    Files_Action_Public_Link,
+    Files_Action_View_Details,
+    Files_Action_Edit_Details,
+    Files_Action_Delete,
+    Files_Action_Remove,
+    Files_Action_Menu_Alt,
+    Files_Delete_Confirm,
+    Files_Remove_Confirm,
+    Files_Delete_Success,
+    Files_Remove_Success,
 
     // File component — display limit
     Files_Show_All,
@@ -67,6 +96,7 @@ const LABELS = {
     Files_Upload_Failed,
 
     // Common
+    Common_Confirm,
     Common_Error,
     Common_Success,
     Common_Warning,

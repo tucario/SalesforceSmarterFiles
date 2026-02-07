@@ -201,6 +201,143 @@ private class TucarioFileDownloadControllerTest {
         }
     }
 
+    // --- getFilesList Permission Tests ---
+
+    @IsTest
+    static void testGetFilesList_PermissionFieldsPopulated() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+
+            Test.startTest();
+            List<TucarioFileDownloadController.FileInfo> files = TucarioFileDownloadController.getFilesList(testAccount.Id);
+            Test.stopTest();
+
+            System.assertEquals(2, files.size(), 'Should return 2 files');
+            for (TucarioFileDownloadController.FileInfo fi : files) {
+                System.assertNotEquals(null, fi.hasEditAccess, 'hasEditAccess should be populated');
+                System.assertNotEquals(null, fi.hasDeleteAccess, 'hasDeleteAccess should be populated');
+            }
+        }
+    }
+
+    // --- deleteFile Tests ---
+
+    @IsTest
+    static void testDeleteFile_Success() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            ContentVersion cv = new ContentVersion(
+                Title = 'ToDeleteSingle',
+                PathOnClient = 'ToDeleteSingle.txt',
+                VersionData = Blob.valueOf('delete me single')
+            );
+            insert cv;
+
+            Id contentDocId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id].ContentDocumentId;
+
+            Test.startTest();
+            TucarioFileDownloadController.deleteFile(contentDocId);
+            Test.stopTest();
+
+            List<ContentDocument> remaining = [SELECT Id FROM ContentDocument WHERE Id = :contentDocId];
+            System.assertEquals(0, remaining.size(), 'ContentDocument should be deleted');
+        }
+    }
+
+    @IsTest
+    static void testDeleteFile_InvalidId() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            Id fakeId = ContentDocument.SObjectType.getDescribe().getKeyPrefix() + '000000000000';
+
+            Test.startTest();
+            try {
+                TucarioFileDownloadController.deleteFile(fakeId);
+                System.assert(false, 'Should have thrown AuraHandledException for invalid ContentDocument ID');
+            } catch (AuraHandledException e) {
+                System.assertNotEquals(null, e.getMessage(), 'Exception message should not be null');
+            }
+            Test.stopTest();
+        }
+    }
+
+    // --- removeFileFromRecord Tests ---
+
+    @IsTest
+    static void testRemoveFileFromRecord_Success() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+
+            ContentVersion cv = new ContentVersion(
+                Title = 'ToRemove',
+                PathOnClient = 'ToRemove.txt',
+                VersionData = Blob.valueOf('remove me from record')
+            );
+            insert cv;
+
+            Id contentDocId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id].ContentDocumentId;
+            insert new ContentDocumentLink(
+                ContentDocumentId = contentDocId,
+                LinkedEntityId = testAccount.Id,
+                ShareType = 'V',
+                Visibility = 'AllUsers'
+            );
+
+            Test.startTest();
+            TucarioFileDownloadController.removeFileFromRecord(contentDocId, testAccount.Id);
+            Test.stopTest();
+
+            List<ContentDocumentLink> links = [
+                SELECT Id FROM ContentDocumentLink
+                WHERE ContentDocumentId = :contentDocId AND LinkedEntityId = :testAccount.Id
+            ];
+            System.assertEquals(0, links.size(), 'ContentDocumentLink should be deleted');
+
+            List<ContentDocument> docs = [SELECT Id FROM ContentDocument WHERE Id = :contentDocId];
+            System.assertEquals(1, docs.size(), 'ContentDocument should still exist');
+        }
+    }
+
+    @IsTest
+    static void testRemoveFileFromRecord_InvalidLink() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+            Id fakeDocId = ContentDocument.SObjectType.getDescribe().getKeyPrefix() + '000000000000';
+
+            Test.startTest();
+            try {
+                TucarioFileDownloadController.removeFileFromRecord(fakeDocId, testAccount.Id);
+                System.assert(false, 'Should have thrown AuraHandledException for invalid link');
+            } catch (AuraHandledException e) {
+                System.assertNotEquals(null, e.getMessage(), 'Exception message should not be null');
+            }
+            Test.stopTest();
+        }
+    }
+
+    // --- isContentDeliveryEnabled Tests ---
+
+    @IsTest
+    static void testIsContentDeliveryEnabled_ReturnsBoolean() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            Test.startTest();
+            Boolean result = TucarioFileDownloadController.isContentDeliveryEnabled();
+            Test.stopTest();
+
+            System.assertNotEquals(null, result, 'isContentDeliveryEnabled should return a Boolean value');
+        }
+    }
+
     // --- deleteFiles Tests ---
 
     @IsTest
