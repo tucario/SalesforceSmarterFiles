@@ -323,6 +323,68 @@ private class TucarioFileDownloadControllerTest {
         }
     }
 
+    // --- createPublicLink Tests ---
+
+    @IsTest
+    static void testCreatePublicLink_Success() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            ContentVersion cv = [
+                SELECT Id
+                FROM ContentVersion
+                WHERE Title = 'TestDocument' AND IsLatest = true
+                LIMIT 1
+            ];
+
+            Test.startTest();
+            String publicUrl = TucarioFileDownloadController.createPublicLink(cv.Id);
+            Test.stopTest();
+
+            System.assertNotEquals(null, publicUrl, 'Public URL should not be null');
+            System.assert(String.isNotBlank(publicUrl), 'Public URL should not be blank');
+        }
+    }
+
+    @IsTest
+    static void testCreatePublicLink_DuplicatePrevention() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            ContentVersion cv = [
+                SELECT Id
+                FROM ContentVersion
+                WHERE Title = 'TestDocument' AND IsLatest = true
+                LIMIT 1
+            ];
+
+            Test.startTest();
+            String firstUrl = TucarioFileDownloadController.createPublicLink(cv.Id);
+            String secondUrl = TucarioFileDownloadController.createPublicLink(cv.Id);
+            Test.stopTest();
+
+            System.assertEquals(firstUrl, secondUrl, 'Both calls should return the same URL (duplicate prevention)');
+        }
+    }
+
+    @IsTest
+    static void testCreatePublicLink_InvalidId() {
+        User testUser = [SELECT Id FROM User WHERE Alias = 'tuctest' LIMIT 1];
+
+        System.runAs(testUser) {
+            Id fakeId = ContentVersion.SObjectType.getDescribe().getKeyPrefix() + '000000000000';
+
+            Test.startTest();
+            try {
+                TucarioFileDownloadController.createPublicLink(fakeId);
+                System.assert(false, 'Should have thrown an exception for invalid ContentVersion ID');
+            } catch (Exception e) {
+                System.assertNotEquals(null, e.getMessage(), 'Exception message should not be null');
+            }
+            Test.stopTest();
+        }
+    }
+
     // --- isContentDeliveryEnabled Tests ---
 
     @IsTest

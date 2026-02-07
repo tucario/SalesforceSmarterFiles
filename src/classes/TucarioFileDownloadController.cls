@@ -173,6 +173,51 @@ public with sharing class TucarioFileDownloadController {
     }
 
     /**
+     * Creates a public link (ContentDistribution) for a file.
+     * Returns the existing public link URL if one already exists for the ContentVersion.
+     * @param contentVersionId The ID of the ContentVersion to generate a public link for
+     * @return The DistributionPublicUrl for the file
+     * @throws AuraHandledException if the public link cannot be created (insufficient access or Content Deliveries disabled)
+     */
+    @AuraEnabled
+    public static String createPublicLink(Id contentVersionId) {
+        List<ContentDistribution> existing = [
+            SELECT DistributionPublicUrl
+            FROM ContentDistribution
+            WHERE ContentVersionId = :contentVersionId
+            LIMIT 1
+        ];
+        if (!existing.isEmpty()) {
+            return existing[0].DistributionPublicUrl;
+        }
+
+        try {
+            ContentVersion cv = [SELECT Id, Title FROM ContentVersion WHERE Id = :contentVersionId LIMIT 1];
+
+            ContentDistribution cd = new ContentDistribution();
+            cd.Name = cv.Title;
+            cd.ContentVersionId = cv.Id;
+            cd.PreferencesAllowViewInBrowser = true;
+            cd.PreferencesLinkLatestVersion = true;
+            cd.PreferencesNotifyOnVisit = false;
+            cd.PreferencesPasswordRequired = false;
+            cd.PreferencesAllowOriginalDownload = true;
+            insert cd;
+
+            ContentDistribution cdResult = [
+                SELECT DistributionPublicUrl
+                FROM ContentDistribution
+                WHERE Id = :cd.Id
+            ];
+            return cdResult.DistributionPublicUrl;
+        } catch (DmlException e) {
+            AuraHandledException ex = new AuraHandledException(e.getMessage());
+            ex.setMessage(e.getMessage());
+            throw ex;
+        }
+    }
+
+    /**
      * Checks if Content Deliveries (Public Links) are enabled and the current user can create them.
      * @return true if ContentDistribution is createable by the current user, false otherwise
      */

@@ -12,6 +12,7 @@ import getUploadedFileSizes from '@salesforce/apex/TucarioFileDownloadController
 import deleteFile from '@salesforce/apex/TucarioFileDownloadController.deleteFile';
 import removeFileFromRecord from '@salesforce/apex/TucarioFileDownloadController.removeFileFromRecord';
 import isContentDeliveryEnabledApex from '@salesforce/apex/TucarioFileDownloadController.isContentDeliveryEnabled';
+import createPublicLink from '@salesforce/apex/TucarioFileDownloadController.createPublicLink';
 import JSZIP_RESOURCE from '@salesforce/resourceUrl/TucarioJSZip';
 import { LABELS, formatLabel } from 'c/tucarioLabels';
 
@@ -304,11 +305,8 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
             case 'download':
                 this.handleDownloadSingle(file);
                 break;
-            case 'share':
-                this.navigateToFileDetail(contentDocumentId);
-                break;
             case 'publiclink':
-                this.navigateToContentDelivery(file.versionId);
+                this.handlePublicLink(file);
                 break;
             case 'details':
                 this.navigateToFileDetail(contentDocumentId);
@@ -572,13 +570,34 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         });
     }
 
-    navigateToContentDelivery(versionId) {
-        this[NavigationMixin.Navigate]({
-            type: 'standard__webPage',
-            attributes: {
-                url: '/lightning/o/ContentDistribution/new?cvId=' + versionId
-            }
-        });
+    async handlePublicLink(file) {
+        try {
+            const publicUrl = await createPublicLink({ contentVersionId: file.versionId });
+            await this.copyToClipboard(publicUrl);
+            this.showToast(LABELS.Common_Success, formatLabel(LABELS.Files_Public_Link_Success, publicUrl), 'success');
+        } catch (error) {
+            this.showToast(LABELS.Common_Error, this.reduceErrors(error), 'error');
+        }
+    }
+
+    async copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+        }
+        // Fallback for Lightning Locker
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        this.template.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+        } finally {
+            textArea.remove();
+        }
     }
 
     async confirmAndDeleteFile(contentDocumentId) {

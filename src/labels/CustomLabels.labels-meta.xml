@@ -164,13 +164,6 @@
         <value>Download</value>
     </labels>
     <labels>
-        <fullName>Tucario_Files_Action_Share</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Row Action: Share</shortDescription>
-        <value>Share</value>
-    </labels>
-    <labels>
         <fullName>Tucario_Files_Action_Public_Link</fullName>
         <language>en_US</language>
         <protected>false</protected>
@@ -285,6 +278,22 @@
         <protected>false</protected>
         <shortDescription>Upload Hint: Max File Size</shortDescription>
         <value>Max file size: {0} MB</value>
+    </labels>
+
+    <!-- File component — public link labels -->
+    <labels>
+        <fullName>Tucario_Files_Public_Link_Success</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Public Link Success Toast</shortDescription>
+        <value>Public link copied to clipboard: {0}</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Public_Link_Creating</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Public Link Creating Spinner</shortDescription>
+        <value>Creating public link...</value>
     </labels>
 
     <!-- File component — tile view labels -->

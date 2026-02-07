@@ -10,7 +10,6 @@ import Files_Upload_Success from '@salesforce/label/c.Tucario_Files_Upload_Succe
 
 // Static labels — File component (row actions)
 import Files_Action_Download from '@salesforce/label/c.Tucario_Files_Action_Download';
-import Files_Action_Share from '@salesforce/label/c.Tucario_Files_Action_Share';
 import Files_Action_Public_Link from '@salesforce/label/c.Tucario_Files_Action_Public_Link';
 import Files_Action_View_Details from '@salesforce/label/c.Tucario_Files_Action_View_Details';
 import Files_Action_Edit_Details from '@salesforce/label/c.Tucario_Files_Action_Edit_Details';
@@ -21,6 +20,10 @@ import Files_Delete_Confirm from '@salesforce/label/c.Tucario_Files_Delete_Confi
 import Files_Remove_Confirm from '@salesforce/label/c.Tucario_Files_Remove_Confirm';
 import Files_Delete_Success from '@salesforce/label/c.Tucario_Files_Delete_Success';
 import Files_Remove_Success from '@salesforce/label/c.Tucario_Files_Remove_Success';
+
+// Static labels — File component (public link)
+import Files_Public_Link_Success from '@salesforce/label/c.Tucario_Files_Public_Link_Success';
+import Files_Public_Link_Creating from '@salesforce/label/c.Tucario_Files_Public_Link_Creating';
 
 // Static labels — File component (display limit)
 import Files_Show_All from '@salesforce/label/c.Tucario_Files_Show_All';
@@ -79,7 +82,6 @@ const LABELS = {
 
     // File component — row actions
     Files_Action_Download,
-    Files_Action_Share,
     Files_Action_Public_Link,
     Files_Action_View_Details,
     Files_Action_Edit_Details,
@@ -90,6 +92,10 @@ const LABELS = {
     Files_Remove_Confirm,
     Files_Delete_Success,
     Files_Remove_Success,
+
+    // File component — public link
+    Files_Public_Link_Success,
+    Files_Public_Link_Creating,
 
     // File component — display limit
     Files_Show_All,
