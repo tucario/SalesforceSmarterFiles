@@ -1,4 +1,4 @@
-public with sharing class FileDownloadController {
+public with sharing class TucarioFileDownloadController {
 
     public class FileInfo {
         @AuraEnabled public Id contentDocumentId;

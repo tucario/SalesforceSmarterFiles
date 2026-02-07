@@ -4,10 +4,11 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
 import { getRecord } from 'lightning/uiRecordApi';
 import { loadScript } from 'lightning/platformResourceLoader';
-import getFilesList from '@salesforce/apex/FileDownloadController.getFilesList';
-import getFileContent from '@salesforce/apex/FileDownloadController.getFileContent';
-import uploadFile from '@salesforce/apex/FileDownloadController.uploadFile';
-import JSZIP_RESOURCE from '@salesforce/resourceUrl/JSZip';
+import getFilesList from '@salesforce/apex/TucarioFileDownloadController.getFilesList';
+import getFileContent from '@salesforce/apex/TucarioFileDownloadController.getFileContent';
+import uploadFile from '@salesforce/apex/TucarioFileDownloadController.uploadFile';
+import JSZIP_RESOURCE from '@salesforce/resourceUrl/TucarioJSZip';
+import { LABELS, formatLabel } from 'c/tucarioLabels';
 
 const FILE_TYPE_ICON_MAP = {
     'AI':        'doctype:ai',
@@ -54,9 +55,9 @@ const FILE_TYPE_ICON_MAP = {
 
 const MAX_FILE_SIZE_BYTES = 18 * 1024 * 1024; // 18 MB
 
-export default class FilesWithDownloadAll extends NavigationMixin(LightningElement) {
+export default class TucarioFilesWithDownloadAll extends NavigationMixin(LightningElement) {
     @api recordId;
-    @api cardTitle = 'Files';
+    @api cardTitle = LABELS.Files_Card_Title;
 
     _excludedExtensionsSet = new Set();
 
@@ -83,6 +84,10 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
 
     get hasExcludedExtensions() {
         return this._excludedExtensionsSet.size > 0;
+    }
+
+    get label() {
+        return LABELS;
     }
 
     files = [];
@@ -121,7 +126,7 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
         this.jsZipInitialized = true;
         loadScript(this, JSZIP_RESOURCE)
             .catch(error => {
-                this.showToast('Error', 'Failed to load ZIP library: ' + this.reduceErrors(error), 'error');
+                this.showToast(LABELS.Common_Error, formatLabel(LABELS.Files_Zip_Library_Error, this.reduceErrors(error)), 'error');
             });
     }
 
@@ -200,7 +205,7 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
 
             const addedCount = Object.keys(zip.files).length;
             if (addedCount === 0) {
-                this.showToast('Warning', 'No files could be added to the archive.', 'warning');
+                this.showToast(LABELS.Common_Warning, LABELS.Files_No_Archive_Warning, 'warning');
                 return;
             }
 
@@ -216,15 +221,15 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
                     messages.push('Failed: ' + failedFiles.join(', '));
                 }
                 this.showToast(
-                    'Download Complete (with warnings)',
-                    addedCount + ' file(s) downloaded. ' + messages.join('. '),
+                    LABELS.Common_Download_Warnings,
+                    formatLabel(LABELS.Files_Download_Warnings, addedCount, messages.join('. ')),
                     'warning'
                 );
             } else {
-                this.showToast('Success', addedCount + ' file(s) downloaded successfully.', 'success');
+                this.showToast(LABELS.Common_Success, formatLabel(LABELS.Files_Download_Success, addedCount), 'success');
             }
         } catch (error) {
-            this.showToast('Error', 'Failed to create ZIP archive: ' + this.reduceErrors(error), 'error');
+            this.showToast(LABELS.Common_Error, formatLabel(LABELS.Files_Zip_Create_Error, this.reduceErrors(error)), 'error');
         } finally {
             this.isDownloading = false;
         }
@@ -232,7 +237,7 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
 
     handleUploadFinished() {
         refreshApex(this.wiredFilesResult);
-        this.showToast('Success', 'File(s) uploaded successfully.', 'success');
+        this.showToast(LABELS.Common_Success, LABELS.Files_Upload_Success, 'success');
     }
 
     async handleFilesSelected(event) {
@@ -244,7 +249,7 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
         const { allowed, blocked } = this.validateFiles(files);
 
         if (blocked.length > 0) {
-            this.showToast('Upload Blocked', this.buildBlockedMessage(blocked), 'error');
+            this.showToast(LABELS.Common_Upload_Blocked, this.buildBlockedMessage(blocked), 'error');
         }
 
         if (allowed.length > 0) {
@@ -303,15 +308,15 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
 
             if (failedFiles.length > 0) {
                 this.showToast(
-                    'Upload Complete (with errors)',
+                    LABELS.Common_Upload_Errors,
                     'Failed: ' + failedFiles.join(', '),
                     'warning'
                 );
             } else {
-                this.showToast('Success', allowedFiles.length + ' file(s) uploaded successfully.', 'success');
+                this.showToast(LABELS.Common_Success, formatLabel(LABELS.Files_Upload_Multi_Success, allowedFiles.length), 'success');
             }
         } catch (error) {
-            this.showToast('Error', 'Upload failed: ' + this.reduceErrors(error), 'error');
+            this.showToast(LABELS.Common_Error, formatLabel(LABELS.Files_Upload_Failed, this.reduceErrors(error)), 'error');
         } finally {
             this.isUploading = false;
         }
@@ -334,13 +339,13 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
         if (blockedFiles.length === 1) {
             const file = blockedFiles[0];
             const ext = this.getFileExtension(file.name);
-            return '"' + file.name + '" cannot be uploaded. The .' + ext + ' file type is not allowed on this page.';
+            return formatLabel(LABELS.Files_Upload_Blocked_Single, file.name, ext);
         }
         const details = blockedFiles.map(file => {
             const ext = this.getFileExtension(file.name);
             return file.name + ' (.' + ext + ')';
         }).join(', ');
-        return blockedFiles.length + ' file(s) could not be uploaded: ' + details + '. These file types are not allowed on this page.';
+        return formatLabel(LABELS.Files_Upload_Blocked_Multiple, blockedFiles.length, details);
     }
 
     // --- Helpers ---
@@ -406,6 +411,6 @@ export default class FilesWithDownloadAll extends NavigationMixin(LightningEleme
         if (error?.body?.message) return error.body.message;
         if (error?.message) return error.message;
         if (Array.isArray(error?.body)) return error.body.map(e => e.message).join(', ');
-        return 'Unknown error';
+        return LABELS.Common_Unknown_Error;
     }
 }

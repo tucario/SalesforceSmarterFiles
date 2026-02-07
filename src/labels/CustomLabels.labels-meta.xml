@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- File component — static labels -->
+    <labels>
+        <fullName>Tucario_Files_Card_Title</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Files Card Title</shortDescription>
+        <value>Files</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Download_All</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Download All Files Link Text</shortDescription>
+        <value>Download All Files</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Preparing_Download</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Preparing Download Spinner Text</shortDescription>
+        <value>Preparing download</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Uploading</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Uploading Files Spinner Text</shortDescription>
+        <value>Uploading files</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Upload_Label</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload Files Input Label</shortDescription>
+        <value>Upload Files</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Empty_State</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Empty State Message</shortDescription>
+        <value>No files attached to this record.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_No_Archive_Warning</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>No Files Added to Archive Warning</shortDescription>
+        <value>No files could be added to the archive.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Upload_Success</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload Success Toast Message</shortDescription>
+        <value>File(s) uploaded successfully.</value>
+    </labels>
+
+    <!-- File component — dynamic labels -->
+    <labels>
+        <fullName>Tucario_Files_Zip_Library_Error</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ZIP Library Load Error</shortDescription>
+        <value>Failed to load ZIP library: {0}</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Download_Warnings</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Download Complete with Warnings</shortDescription>
+        <value>{0} file(s) downloaded. {1}</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Download_Success</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Download Success Toast Message</shortDescription>
+        <value>{0} file(s) downloaded successfully.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Zip_Create_Error</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ZIP Archive Creation Error</shortDescription>
+        <value>Failed to create ZIP archive: {0}</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Upload_Multi_Success</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Multiple Files Upload Success</shortDescription>
+        <value>{0} file(s) uploaded successfully.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Upload_Blocked_Single</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Single File Upload Blocked</shortDescription>
+        <value>&quot;{0}&quot; cannot be uploaded. The .{1} file type is not allowed on this page.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Upload_Blocked_Multiple</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Multiple Files Upload Blocked</shortDescription>
+        <value>{0} file(s) could not be uploaded: {1}. These file types are not allowed on this page.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Upload_Failed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload Failed Error Message</shortDescription>
+        <value>Upload failed: {0}</value>
+    </labels>
+
+    <!-- Common labels -->
+    <labels>
+        <fullName>Tucario_Common_Error</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error Toast Title</shortDescription>
+        <value>Error</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Common_Success</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Success Toast Title</shortDescription>
+        <value>Success</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Common_Warning</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Warning Toast Title</shortDescription>
+        <value>Warning</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Common_Upload_Blocked</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload Blocked Toast Title</shortDescription>
+        <value>Upload Blocked</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Common_Download_Warnings</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Download with Warnings Toast Title</shortDescription>
+        <value>Download Complete (with warnings)</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Common_Upload_Errors</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload with Errors Toast Title</shortDescription>
+        <value>Upload Complete (with errors)</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Common_Unknown_Error</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Unknown Error Fallback</shortDescription>
+        <value>Unknown error</value>
+    </labels>
+</CustomLabels>
