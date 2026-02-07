@@ -12,6 +12,9 @@
             <property name="cardTitle" type="String" label="Card Title"
                       default="Files"
                       description="Title displayed in the component header" />
+            <property name="excludedFileExtensions" type="String" label="Excluded File Extensions"
+                      default=""
+                      description="Comma-separated list of file extensions to exclude (e.g., docx,exe,pdf)" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

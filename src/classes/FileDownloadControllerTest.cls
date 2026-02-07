@@ -77,6 +77,70 @@ private class FileDownloadControllerTest {
     }
 
     @IsTest
+    static void testUploadFile_Success() {
+        Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+        String base64Data = EncodingUtil.base64Encode(Blob.valueOf('Test upload content'));
+        String fileName = 'uploaded.txt';
+
+        Test.startTest();
+        Id cvId = FileDownloadController.uploadFile(base64Data, fileName, testAccount.Id);
+        Test.stopTest();
+
+        System.assertNotEquals(null, cvId, 'Should return a ContentVersion Id');
+
+        ContentVersion cv = [SELECT Title, PathOnClient FROM ContentVersion WHERE Id = :cvId];
+        System.assertEquals('uploaded', cv.Title, 'Title should be filename without extension');
+        System.assertEquals('uploaded.txt', cv.PathOnClient, 'PathOnClient should be the full filename');
+
+        Id contentDocId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cvId].ContentDocumentId;
+        List<ContentDocumentLink> links = [
+            SELECT LinkedEntityId FROM ContentDocumentLink
+            WHERE ContentDocumentId = :contentDocId AND LinkedEntityId = :testAccount.Id
+        ];
+        System.assertEquals(1, links.size(), 'Should create a ContentDocumentLink to the record');
+    }
+
+    @IsTest
+    static void testUploadFile_NullBase64Data() {
+        Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+
+        Test.startTest();
+        try {
+            FileDownloadController.uploadFile(null, 'test.txt', testAccount.Id);
+            System.assert(false, 'Should have thrown AuraHandledException');
+        } catch (AuraHandledException e) {
+            System.assertEquals('File data is required.', e.getMessage());
+        }
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testUploadFile_NullFileName() {
+        Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+
+        Test.startTest();
+        try {
+            FileDownloadController.uploadFile('SGVsbG8=', null, testAccount.Id);
+            System.assert(false, 'Should have thrown AuraHandledException');
+        } catch (AuraHandledException e) {
+            System.assertEquals('File name is required.', e.getMessage());
+        }
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testUploadFile_NullRecordId() {
+        Test.startTest();
+        try {
+            FileDownloadController.uploadFile('SGVsbG8=', 'test.txt', null);
+            System.assert(false, 'Should have thrown AuraHandledException');
+        } catch (AuraHandledException e) {
+            System.assertEquals('Record ID is required.', e.getMessage());
+        }
+        Test.stopTest();
+    }
+
+    @IsTest
     static void testGetFileContent_InvalidId() {
         // Use a fabricated ContentVersion ID that doesn't exist
         Id fakeId = ContentVersion.SObjectType.getDescribe().getKeyPrefix() + '000000000000';

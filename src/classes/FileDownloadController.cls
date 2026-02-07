@@ -72,6 +72,35 @@ public with sharing class FileDownloadController {
     }
 
     @AuraEnabled
+    public static Id uploadFile(String base64Data, String fileName, Id recordId) {
+        if (String.isBlank(base64Data)) {
+            throw new AuraHandledException('File data is required.');
+        }
+        if (String.isBlank(fileName)) {
+            throw new AuraHandledException('File name is required.');
+        }
+        if (recordId == null) {
+            throw new AuraHandledException('Record ID is required.');
+        }
+
+        ContentVersion cv = new ContentVersion();
+        cv.Title = fileName.substringBeforeLast('.');
+        cv.PathOnClient = fileName;
+        cv.VersionData = EncodingUtil.base64Decode(base64Data);
+        insert cv;
+
+        Id contentDocumentId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id].ContentDocumentId;
+
+        ContentDocumentLink cdl = new ContentDocumentLink();
+        cdl.ContentDocumentId = contentDocumentId;
+        cdl.LinkedEntityId = recordId;
+        cdl.ShareType = 'V';
+        insert cdl;
+
+        return cv.Id;
+    }
+
+    @AuraEnabled
     public static FileContent getFileContent(Id contentVersionId) {
         List<ContentVersion> versions = [
             SELECT Title, FileExtension, VersionData, ContentSize
