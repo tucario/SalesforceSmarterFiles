@@ -73,3 +73,32 @@ If you manage access through your own permission sets, add:
 - System Administrators already have access (implicit Apex class access via "Modify All Data" / "Author Apex")
 - Users need standard Files access (included in all standard profiles)
 - File visibility is governed by your org's sharing rules
+
+## Removal
+
+> **Warning:** This operation **permanently deletes** all Tucario Files components from your org. Any Lightning pages using the component will lose it, and any custom code referencing the Apex classes or Custom Labels will break. This cannot be undone — back up any customizations before proceeding.
+
+### Sandbox
+
+```bash
+sf project deploy start --metadata-dir destructive --target-org <your-org-alias>
+```
+
+### Production
+
+```bash
+sf project deploy start --metadata-dir destructive --target-org <your-org-alias> --test-level RunLocalTests
+```
+
+> **Note:** Production deployments require Apex test execution. The `--test-level RunLocalTests` flag runs all local Apex tests in your org (excluding managed package tests). If the Tucario Files package is the **only** Apex in your org and there are no other local tests to run, you may need to create a temporary dummy test class, deploy it, then run the removal command.
+
+### What happens
+
+- All 66 package components are removed: Apex classes, LWC components, Custom Labels, Static Resource, and Permission Set
+- Components that have already been manually deleted are safely skipped — the deployment will not fail
+- Permission Set assignments are automatically removed when the Permission Set is deleted
+- Uploaded files (ContentVersion records) are **not** affected — they are data, not metadata
+
+### Keeping the manifest current
+
+If future versions of the package add new components, the `destructive/destructiveChanges.xml` manifest should be updated to include them. The manifest must list every component for complete removal.
