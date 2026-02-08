@@ -9,11 +9,10 @@ Open **Lightning App Builder** on any record page to configure the component.
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | Card Title | String | `Files` | Header text displayed on the component card |
-| Excluded File Extensions | String | *(empty)* | Comma-separated blocklist of file extensions (e.g., `exe,bat`). Blocked files are deleted after upload. |
-| Initial Files Displayed | Integer | `5` | Maximum number of files shown initially. Set to `0` to show all files. |
 | Allowed File Extensions | String | *(empty)* | Comma-separated allowlist of file extensions (e.g., `pdf,docx,png`). Leave empty to allow all types. |
-| Max File Size (MB) | Integer | `0` | Maximum upload size in megabytes. `0` = no limit. |
+| Initial Files Displayed | Integer | `5` | Maximum number of files shown initially. Set to `0` to show all files. |
 | Display Mode | Picklist | `List` | `List` (vertical rows) or `Tiles` (grid of cards) |
+| Max File Size (MB) | Integer | `0` | Maximum upload size in megabytes. `0` = no limit. |
 
 ## Display Modes
 
