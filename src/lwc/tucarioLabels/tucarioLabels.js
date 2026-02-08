@@ -50,6 +50,11 @@ import Files_Upload_Hint_Max_Size from '@salesforce/label/c.Tucario_Files_Upload
 // Static labels — File component (tile view)
 import Files_Tile_Action_Alt from '@salesforce/label/c.Tucario_Files_Tile_Action_Alt';
 
+// Dynamic labels — File component (large file download)
+import Files_Download_Mixed_Success from '@salesforce/label/c.Tucario_Files_Download_Mixed_Success';
+import Files_Download_Large_Success from '@salesforce/label/c.Tucario_Files_Download_Large_Success';
+import Files_Download_Large_Error from '@salesforce/label/c.Tucario_Files_Download_Large_Error';
+
 // Dynamic labels — File component
 import Files_Zip_Library_Error from '@salesforce/label/c.Tucario_Files_Zip_Library_Error';
 import Files_Download_Warnings from '@salesforce/label/c.Tucario_Files_Download_Warnings';
@@ -126,6 +131,11 @@ const LABELS = {
 
     // File component — tile view
     Files_Tile_Action_Alt,
+
+    // File component — large file download
+    Files_Download_Mixed_Success,
+    Files_Download_Large_Success,
+    Files_Download_Large_Error,
 
     // File component — dynamic
     Files_Zip_Library_Error,

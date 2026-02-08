@@ -360,54 +360,61 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         }
 
         this.isDownloading = true;
-        const skippedFiles = [];
+        const smallFiles = [];
+        const largeFiles = [];
+
+        for (const file of this.files) {
+            if (file.contentSize > MAX_FILE_SIZE_BYTES) {
+                largeFiles.push(file);
+            } else {
+                smallFiles.push(file);
+            }
+        }
+
         const failedFiles = [];
-        const nameCount = new Map();
+        let smallZipCount = 0;
 
         try {
-            // eslint-disable-next-line no-undef
-            const zip = new JSZip();
+            // Phase 1: Small files → JSZip
+            if (smallFiles.length > 0) {
+                // eslint-disable-next-line no-undef
+                const zip = new JSZip();
+                const nameCount = new Map();
 
-            for (const file of this.files) {
-                if (file.contentSize > MAX_FILE_SIZE_BYTES) {
-                    skippedFiles.push(file.displayName + ' (exceeds 18 MB limit)');
-                    continue;
+                for (const file of smallFiles) {
+                    try {
+                        const content = await getFileContent({ contentVersionId: file.versionId });
+                        const uniqueName = this.getUniqueFileName(content.fileName, nameCount);
+                        zip.file(uniqueName, content.base64Data, { base64: true });
+                    } catch (error) {
+                        failedFiles.push(file.displayName + ' (' + this.reduceErrors(error) + ')');
+                    }
                 }
 
+                smallZipCount = Object.keys(zip.files).length;
+                if (smallZipCount > 0) {
+                    const blob = await zip.generateAsync({ type: 'blob' });
+                    this.downloadBlob(blob, this.zipFileName);
+                }
+            }
+
+            // Phase 2: Large files → server-generated ZIP via servlet
+            if (largeFiles.length > 0) {
                 try {
-                    const content = await getFileContent({ contentVersionId: file.versionId });
-                    const uniqueName = this.getUniqueFileName(content.fileName, nameCount);
-                    zip.file(uniqueName, content.base64Data, { base64: true });
+                    const versionIds = largeFiles.map(f => f.versionId).join('/');
+                    const url = '/sfc/servlet.shepherd/version/download/' + versionIds;
+                    this.downloadUrl(url);
                 } catch (error) {
-                    failedFiles.push(file.displayName + ' (' + this.reduceErrors(error) + ')');
+                    this.showToast(
+                        LABELS.Common_Error,
+                        formatLabel(LABELS.Files_Download_Large_Error, largeFiles.map(f => f.displayName).join(', ')),
+                        'error'
+                    );
                 }
             }
 
-            const addedCount = Object.keys(zip.files).length;
-            if (addedCount === 0) {
-                this.showToast(LABELS.Common_Warning, LABELS.Files_No_Archive_Warning, 'warning');
-                return;
-            }
-
-            const blob = await zip.generateAsync({ type: 'blob' });
-            this.downloadBlob(blob, this.zipFileName);
-
-            if (skippedFiles.length > 0 || failedFiles.length > 0) {
-                const messages = [];
-                if (skippedFiles.length > 0) {
-                    messages.push('Skipped: ' + skippedFiles.join(', '));
-                }
-                if (failedFiles.length > 0) {
-                    messages.push('Failed: ' + failedFiles.join(', '));
-                }
-                this.showToast(
-                    LABELS.Common_Download_Warnings,
-                    formatLabel(LABELS.Files_Download_Warnings, addedCount, messages.join('. ')),
-                    'warning'
-                );
-            } else {
-                this.showToast(LABELS.Common_Success, formatLabel(LABELS.Files_Download_Success, addedCount), 'success');
-            }
+            // Phase 3: Toast feedback
+            this.showDownloadToast(smallZipCount, largeFiles.length, failedFiles);
         } catch (error) {
             this.showToast(LABELS.Common_Error, formatLabel(LABELS.Files_Zip_Create_Error, this.reduceErrors(error)), 'error');
         } finally {
@@ -547,20 +554,9 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
 
     // --- Row Action Handlers ---
 
-    async handleDownloadSingle(file) {
-        try {
-            const content = await getFileContent({ contentVersionId: file.versionId });
-            const byteCharacters = atob(content.base64Data);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray]);
-            this.downloadBlob(blob, content.fileName);
-        } catch (error) {
-            this.showToast(LABELS.Common_Error, this.reduceErrors(error), 'error');
-        }
+    handleDownloadSingle(file) {
+        const url = '/sfc/servlet.shepherd/version/download/' + file.versionId;
+        this.downloadUrl(url);
     }
 
     navigateToFileDetail(contentDocumentId) {
@@ -701,6 +697,39 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+
+    downloadUrl(url) {
+        const a = document.createElement('a');
+        a.href = url;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    showDownloadToast(smallCount, largeCount, failedFiles) {
+        if (smallCount === 0 && largeCount === 0) {
+            this.showToast(LABELS.Common_Warning, LABELS.Files_No_Archive_Warning, 'warning');
+            return;
+        }
+
+        if (failedFiles.length > 0) {
+            const messages = ['Failed: ' + failedFiles.join(', ')];
+            this.showToast(
+                LABELS.Common_Download_Warnings,
+                formatLabel(LABELS.Files_Download_Warnings, smallCount + largeCount, messages.join('. ')),
+                'warning'
+            );
+            return;
+        }
+
+        if (smallCount > 0 && largeCount > 0) {
+            this.showToast(LABELS.Common_Success, formatLabel(LABELS.Files_Download_Mixed_Success, smallCount, largeCount), 'success');
+        } else if (largeCount > 0) {
+            this.showToast(LABELS.Common_Success, formatLabel(LABELS.Files_Download_Large_Success, largeCount), 'success');
+        } else {
+            this.showToast(LABELS.Common_Success, formatLabel(LABELS.Files_Download_Success, smallCount), 'success');
+        }
     }
 
     showToast(title, message, variant) {
