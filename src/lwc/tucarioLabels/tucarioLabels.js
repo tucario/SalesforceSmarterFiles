@@ -21,6 +21,10 @@ import Files_Remove_Confirm from '@salesforce/label/c.Tucario_Files_Remove_Confi
 import Files_Delete_Success from '@salesforce/label/c.Tucario_Files_Delete_Success';
 import Files_Remove_Success from '@salesforce/label/c.Tucario_Files_Remove_Success';
 
+// Static labels — File component (permission errors)
+import Files_Delete_Error from '@salesforce/label/c.Tucario_Files_Delete_Error';
+import Files_Remove_Error from '@salesforce/label/c.Tucario_Files_Remove_Error';
+
 // Static labels — File component (edit details)
 import Files_Edit_Details_Success from '@salesforce/label/c.Tucario_Files_Edit_Details_Success';
 
@@ -102,6 +106,10 @@ const LABELS = {
     Files_Remove_Confirm,
     Files_Delete_Success,
     Files_Remove_Success,
+
+    // File component — permission errors
+    Files_Delete_Error,
+    Files_Remove_Error,
 
     // File component — edit details
     Files_Edit_Details_Success,

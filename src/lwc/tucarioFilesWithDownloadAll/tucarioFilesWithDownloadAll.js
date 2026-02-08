@@ -13,6 +13,7 @@ import deleteFile from '@salesforce/apex/TucarioFileDownloadController.deleteFil
 import removeFileFromRecord from '@salesforce/apex/TucarioFileDownloadController.removeFileFromRecord';
 import isContentDeliveryEnabledApex from '@salesforce/apex/TucarioFileDownloadController.isContentDeliveryEnabled';
 import createPublicLink from '@salesforce/apex/TucarioFileDownloadController.createPublicLink';
+import userId from '@salesforce/user/Id';
 import JSZIP_RESOURCE from '@salesforce/resourceUrl/TucarioJSZip';
 import { LABELS, formatLabel } from 'c/tucarioLabels';
 import TucarioFileEditModal from 'c/tucarioFileEditModal';
@@ -65,6 +66,7 @@ const MAX_FILE_SIZE_BYTES = 18 * 1024 * 1024; // 18 MB
 export default class TucarioFilesWithDownloadAll extends NavigationMixin(LightningElement) {
     @api recordId;
     @api cardTitle = LABELS.Files_Card_Title;
+    userId = userId;
 
     _initialFilesDisplayed = 0;
     isExpanded = false;
@@ -288,6 +290,7 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
                     formattedSize: this.formatFileSize(file.contentSize),
                     formattedDate: this.formatDate(file.lastModifiedDate),
                     displayName,
+                    ownerId: file.ownerId,
                     tileActionAlt: formatLabel(LABELS.Files_Tile_Action_Alt, displayName)
                 };
             });
