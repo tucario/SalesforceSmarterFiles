@@ -28,7 +28,16 @@ src/
 
 ### File Display & Download
 
-The component queries `ContentDocumentLink` records tied to the current record, maps file types to SLDS icons, and renders a scrollable list. "Download All" fetches each file's base64 content via Apex, builds a ZIP in-browser with JSZip, and triggers a download.
+The component queries `ContentDocumentLink` records tied to the current record, maps file types to SLDS icons, and renders a scrollable list.
+
+**Single-file download** uses the Salesforce file servlet URL (`/sfc/servlet.shepherd/version/download/{ContentVersionId}`) directly — no Apex call, no file size limit.
+
+**Download All** uses a two-phase approach:
+
+1. **Small files** (≤ 18 MB) — fetched via Apex, zipped client-side with JSZip, and downloaded as a named archive
+2. **Large files** (> 18 MB) — combined into a single server-generated ZIP via the multi-file servlet URL
+
+This results in at most two downloads per operation (one client-side ZIP + one server ZIP) and ensures no files are ever skipped.
 
 ### Upload with Extension Filtering
 
