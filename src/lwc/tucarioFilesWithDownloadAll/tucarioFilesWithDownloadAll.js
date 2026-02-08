@@ -15,6 +15,7 @@ import isContentDeliveryEnabledApex from '@salesforce/apex/TucarioFileDownloadCo
 import createPublicLink from '@salesforce/apex/TucarioFileDownloadController.createPublicLink';
 import JSZIP_RESOURCE from '@salesforce/resourceUrl/TucarioJSZip';
 import { LABELS, formatLabel } from 'c/tucarioLabels';
+import TucarioFileEditModal from 'c/tucarioFileEditModal';
 
 const FILE_TYPE_ICON_MAP = {
     'AI':        'doctype:ai',
@@ -193,6 +194,20 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
     jsZipInitialized = false;
     wiredFilesResult;
     recordName;
+
+    handleVisibilityChange = () => {
+        if (!document.hidden) {
+            refreshApex(this.wiredFilesResult);
+        }
+    };
+
+    connectedCallback() {
+        document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    }
+
+    disconnectedCallback() {
+        document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    }
 
     get hasFiles() {
         return this.files && this.files.length > 0;
@@ -559,15 +574,15 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         });
     }
 
-    navigateToFileEdit(contentDocumentId) {
-        this[NavigationMixin.Navigate]({
-            type: 'standard__recordPage',
-            attributes: {
-                recordId: contentDocumentId,
-                objectApiName: 'ContentDocument',
-                actionName: 'edit'
-            }
+    async navigateToFileEdit(contentDocumentId) {
+        const result = await TucarioFileEditModal.open({
+            size: 'small',
+            contentDocumentId: contentDocumentId
         });
+        if (result === 'success') {
+            this.showToast(LABELS.Common_Success, LABELS.Files_Edit_Details_Success, 'success');
+            await refreshApex(this.wiredFilesResult);
+        }
     }
 
     async handlePublicLink(file) {

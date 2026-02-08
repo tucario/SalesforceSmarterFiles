@@ -2,25 +2,32 @@
 
 ## Component Properties
 
+Open **Lightning App Builder** on any record page to configure the component.
+
+<img src="images/app-builder-config.png" alt="Lightning App Builder showing component configuration panel" width="800">
+
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | Card Title | String | `Files` | Header text displayed on the component card |
-| Excluded File Extensions | String | *(empty)* | Comma-separated list of file extensions to block (e.g., `docx,exe,pdf`) |
-| Initial Files Displayed | Integer | *(none)* | Maximum number of files to display initially |
+| Excluded File Extensions | String | *(empty)* | Comma-separated blocklist of file extensions (e.g., `exe,bat`). Blocked files are deleted after upload. |
+| Initial Files Displayed | Integer | `5` | Maximum number of files shown initially. Set to `0` to show all files. |
+| Allowed File Extensions | String | *(empty)* | Comma-separated allowlist of file extensions (e.g., `pdf,docx,png`). Leave empty to allow all types. |
+| Max File Size (MB) | Integer | `0` | Maximum upload size in megabytes. `0` = no limit. |
+| Display Mode | Picklist | `List` | `List` (vertical rows) or `Tiles` (grid of cards) |
 
-When **Excluded File Extensions** is empty or not set, all file types are allowed — the component behaves like a standard file uploader.
+## Display Modes
 
-### How Excluded Extensions Work
+### List
 
-File upload always uses the standard Salesforce `lightning-file-upload` component, which supports files of any size. When excluded extensions are configured, the component validates files **after** upload completes:
+Files are displayed as vertical rows with file name, size, and date.
 
-1. User selects and uploads file(s) through the standard Salesforce file picker
-2. Once upload finishes, the component checks each file's extension against the excluded list
-3. Files with excluded extensions are **automatically deleted** from the org and the user sees an "Upload Blocked" error toast
-4. Files with allowed extensions are kept and a success toast is shown
-5. A spinner is displayed while blocked files are being removed
+<img src="images/list-view.png" alt="Files component in List view" width="450">
 
-This approach ensures full compatibility with large files (no size limit) while still enforcing extension restrictions.
+### Tiles
+
+Files are displayed as a responsive grid of cards with file type icons.
+
+<img src="images/tile-view.png" alt="Files component in Tiles view" width="450">
 
 ## Extension Format
 
@@ -39,10 +46,11 @@ Leading dots are stripped, whitespace is trimmed, and matching is case-insensiti
 
 | Category | Components |
 |----------|-----------|
-| Apex Classes | FileDownloadController, TucarioMetadataExplorerController, TucarioMetadataService, TucarioSetupController |
-| Apex Test Classes | FileDownloadControllerTest, TucarioMetadataServiceTest, TucarioSetupControllerTest |
-| Lightning Web Components | filesWithDownloadAll, tucarioMetadataExplorer, tucarioSetupWizard, tucarioSetupWizardV2 |
-| Static Resources | JSZip (3.10.1) |
+| Apex Classes | TucarioFileDownloadController |
+| Apex Test Classes | TucarioFileDownloadControllerTest |
+| Lightning Web Components | tucarioFilesWithDownloadAll, tucarioLabels |
+| Static Resources | TucarioJSZip (3.10.1) |
+| Custom Labels | `Tucario_Files_*`, `Tucario_Common_*` |
 | Permission Set | Tucario_Files |
 
 ## Customizing Displayed Text

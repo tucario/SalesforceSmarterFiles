@@ -305,7 +305,30 @@
         <value>Actions for {0}</value>
     </labels>
 
+    <!-- File component — edit details labels -->
+    <labels>
+        <fullName>Tucario_Files_Edit_Details_Success</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Edit File Details Success Toast Message</shortDescription>
+        <value>File details updated successfully.</value>
+    </labels>
+
     <!-- Common labels -->
+    <labels>
+        <fullName>Tucario_Common_Save</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Save Button Label</shortDescription>
+        <value>Save</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Common_Cancel</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Cancel Button Label</shortDescription>
+        <value>Cancel</value>
+    </labels>
     <labels>
         <fullName>Tucario_Common_Upload_Size_Blocked</fullName>
         <language>en_US</language>
