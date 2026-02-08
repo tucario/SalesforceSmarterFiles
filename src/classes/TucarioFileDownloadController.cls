@@ -13,6 +13,7 @@ public with sharing class TucarioFileDownloadController {
         @AuraEnabled public String fileExtension;
         @AuraEnabled public Boolean hasEditAccess;
         @AuraEnabled public Boolean hasDeleteAccess;
+        @AuraEnabled public Id ownerId;
     }
 
     /**
@@ -40,7 +41,8 @@ public with sharing class TucarioFileDownloadController {
                    ContentDocument.FileType,
                    ContentDocument.ContentSize,
                    ContentDocument.LatestPublishedVersionId,
-                   ContentDocument.LastModifiedDate
+                   ContentDocument.LastModifiedDate,
+                   ContentDocument.OwnerId
             FROM ContentDocumentLink
             WHERE LinkedEntityId = :recordId
             ORDER BY ContentDocument.LastModifiedDate DESC
@@ -67,13 +69,21 @@ public with sharing class TucarioFileDownloadController {
 
         Map<Id, UserRecordAccess> accessMap = new Map<Id, UserRecordAccess>();
         for (UserRecordAccess ura : [
-            SELECT RecordId, HasEditAccess, HasDeleteAccess
+            SELECT RecordId, HasEditAccess
             FROM UserRecordAccess
             WHERE UserId = :UserInfo.getUserId()
               AND RecordId IN :docIds
         ]) {
             accessMap.put(ura.RecordId, ura);
         }
+
+        Id currentUserId = UserInfo.getUserId();
+        Boolean hasModifyAllData = [
+            SELECT COUNT()
+            FROM PermissionSetAssignment
+            WHERE AssigneeId = :currentUserId
+              AND PermissionSet.PermissionsModifyAllData = true
+        ] > 0;
 
         for (ContentDocumentLink link : docLinks) {
             FileInfo fi = new FileInfo();
@@ -89,14 +99,11 @@ public with sharing class TucarioFileDownloadController {
                 fi.fileExtension = cv.FileExtension;
             }
 
+            fi.ownerId = link.ContentDocument.OwnerId;
+
             UserRecordAccess access = accessMap.get(link.ContentDocumentId);
-            if (access != null) {
-                fi.hasEditAccess = access.HasEditAccess;
-                fi.hasDeleteAccess = access.HasDeleteAccess;
-            } else {
-                fi.hasEditAccess = false;
-                fi.hasDeleteAccess = false;
-            }
+            fi.hasEditAccess = (access != null) ? access.HasEditAccess : false;
+            fi.hasDeleteAccess = (link.ContentDocument.OwnerId == currentUserId || hasModifyAllData);
 
             fileInfoList.add(fi);
         }
@@ -137,8 +144,8 @@ public with sharing class TucarioFileDownloadController {
         try {
             delete [SELECT Id FROM ContentDocument WHERE Id = :contentDocumentId LIMIT 1];
         } catch (DmlException e) {
-            AuraHandledException ex = new AuraHandledException(e.getMessage());
-            ex.setMessage(e.getMessage());
+            AuraHandledException ex = new AuraHandledException(System.Label.Tucario_Files_Delete_Error);
+            ex.setMessage(System.Label.Tucario_Files_Delete_Error);
             throw ex;
         }
     }
@@ -166,8 +173,8 @@ public with sharing class TucarioFileDownloadController {
             ex.setMessage(System.Label.Tucario_Files_Error_File_Not_Found);
             throw ex;
         } catch (DmlException e) {
-            AuraHandledException ex = new AuraHandledException(e.getMessage());
-            ex.setMessage(e.getMessage());
+            AuraHandledException ex = new AuraHandledException(System.Label.Tucario_Files_Remove_Error);
+            ex.setMessage(System.Label.Tucario_Files_Remove_Error);
             throw ex;
         }
     }

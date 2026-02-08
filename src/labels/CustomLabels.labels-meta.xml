@@ -328,6 +328,22 @@
         <value>Could not download large files: {0}. Try downloading them individually from the file detail page.</value>
     </labels>
 
+    <!-- File component — permission error labels -->
+    <labels>
+        <fullName>Tucario_Files_Delete_Error</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Delete Permission Error</shortDescription>
+        <value>You don&apos;t have permission to delete this file.</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Remove_Error</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Remove from Record Permission Error</shortDescription>
+        <value>You don&apos;t have permission to remove this file from the record.</value>
+    </labels>
+
     <!-- File component — edit details labels -->
     <labels>
         <fullName>Tucario_Files_Edit_Details_Success</fullName>
