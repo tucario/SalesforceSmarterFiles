@@ -21,6 +21,9 @@ import Files_Remove_Confirm from '@salesforce/label/c.Tucario_Files_Remove_Confi
 import Files_Delete_Success from '@salesforce/label/c.Tucario_Files_Delete_Success';
 import Files_Remove_Success from '@salesforce/label/c.Tucario_Files_Remove_Success';
 
+// Static labels — File component (edit details)
+import Files_Edit_Details_Success from '@salesforce/label/c.Tucario_Files_Edit_Details_Success';
+
 // Static labels — File component (public link)
 import Files_Public_Link_Success from '@salesforce/label/c.Tucario_Files_Public_Link_Success';
 import Files_Public_Link_Creating from '@salesforce/label/c.Tucario_Files_Public_Link_Creating';
@@ -68,6 +71,8 @@ import Common_Upload_Validation from '@salesforce/label/c.Tucario_Common_Upload_
 import Common_Download_Warnings from '@salesforce/label/c.Tucario_Common_Download_Warnings';
 import Common_Upload_Errors from '@salesforce/label/c.Tucario_Common_Upload_Errors';
 import Common_Unknown_Error from '@salesforce/label/c.Tucario_Common_Unknown_Error';
+import Common_Save from '@salesforce/label/c.Tucario_Common_Save';
+import Common_Cancel from '@salesforce/label/c.Tucario_Common_Cancel';
 
 const LABELS = {
     // File component — static
@@ -92,6 +97,9 @@ const LABELS = {
     Files_Remove_Confirm,
     Files_Delete_Success,
     Files_Remove_Success,
+
+    // File component — edit details
+    Files_Edit_Details_Success,
 
     // File component — public link
     Files_Public_Link_Success,
@@ -139,7 +147,9 @@ const LABELS = {
     Common_Upload_Validation,
     Common_Download_Warnings,
     Common_Upload_Errors,
-    Common_Unknown_Error
+    Common_Unknown_Error,
+    Common_Save,
+    Common_Cancel
 };
 
 function formatLabel(label, ...args) {

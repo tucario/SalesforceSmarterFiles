@@ -1,0 +1,23 @@
+<template>
+    <lightning-modal-header label={labels.Files_Action_Edit_Details}></lightning-modal-header>
+    <lightning-modal-body>
+        <lightning-record-edit-form
+            record-id={contentDocumentId}
+            object-api-name="ContentDocument"
+            onsuccess={handleSuccess}
+        >
+            <lightning-messages></lightning-messages>
+            <lightning-input-field field-name="Title"></lightning-input-field>
+            <lightning-input-field field-name="Description"></lightning-input-field>
+        </lightning-record-edit-form>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button label={labels.Common_Cancel} onclick={handleCancel}></lightning-button>
+        <lightning-button
+            variant="brand"
+            label={labels.Common_Save}
+            onclick={handleSave}
+            class="slds-m-left_x-small"
+        ></lightning-button>
+    </lightning-modal-footer>
+</template>
