@@ -14,7 +14,10 @@ A Lightning Web Component that enhances the native Salesforce file experience on
 - **File preview** — Click any file to open the standard Salesforce file preview
 - **Download All as ZIP** — One-click download of all record files into a ZIP archive (small files via JSZip, large files via a server-generated ZIP) — no file size limits
 - **Per-file actions** — Dropdown menu on each file with Download, Share, Public Link, View Details, Edit Details, Delete, and Remove from Record
+- **Public link creation** — Generate a public download link for any file and automatically copy it to the clipboard
+- **Edit details with auto-refresh** — Edit file details in a modal and see the file list update automatically after saving
 - **Large file support** — Files of any size can be downloaded individually or in bulk, bypassing Apex heap limits via the Salesforce file servlet
+- **Platform license support** — Full compatibility with Salesforce Platform Starter and Platform Plus licenses, with accurate ownership-based permission checks for Delete actions
 - **Allowed file extensions** — Optionally restrict uploads to specific file types (e.g., `pdf,docx,png`), configured per page by an admin
 - **Max file size** — Set a maximum upload size in MB per page
 - **Display limit** — Control how many files are shown initially with a "Show All" toggle
