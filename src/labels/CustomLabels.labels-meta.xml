@@ -305,6 +305,29 @@
         <value>Actions for {0}</value>
     </labels>
 
+    <!-- File component — large file download labels -->
+    <labels>
+        <fullName>Tucario_Files_Download_Mixed_Success</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Download Mixed Success (Small ZIP + Large Server ZIP)</shortDescription>
+        <value>{0} files zipped, {1} large file(s) downloading separately</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Download_Large_Success</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Download All Large Files via Server</shortDescription>
+        <value>{0} large file(s) downloading via server</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Download_Large_Error</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Large File Download Error</shortDescription>
+        <value>Could not download large files: {0}. Try downloading them individually from the file detail page.</value>
+    </labels>
+
     <!-- File component — edit details labels -->
     <labels>
         <fullName>Tucario_Files_Edit_Details_Success</fullName>
