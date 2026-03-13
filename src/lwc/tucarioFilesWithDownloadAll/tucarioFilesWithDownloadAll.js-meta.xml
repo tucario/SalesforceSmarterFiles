@@ -28,6 +28,10 @@
                       datasource="List, Tiles"
                       default="List"
                       description="Choose how files are displayed: List (vertical rows) or Tiles (grid of cards)" />
+            <property name="defaultSortOrder" type="String" label="Default Sort Order"
+                      datasource="date-newest, date-oldest, size-largest, size-smallest, name-az, name-za"
+                      default="date-newest"
+                      description="Default sort order for the file list. Users can change at runtime." />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

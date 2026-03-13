@@ -54,6 +54,15 @@ import Files_Upload_Hint_Max_Size from '@salesforce/label/c.Tucario_Files_Upload
 // Static labels — File component (tile view)
 import Files_Tile_Action_Alt from '@salesforce/label/c.Tucario_Files_Tile_Action_Alt';
 
+// Static labels — File component (sort)
+import Files_Sort_Label from '@salesforce/label/c.Tucario_Files_Sort_Label';
+import Files_Sort_Date_Newest from '@salesforce/label/c.Tucario_Files_Sort_Date_Newest';
+import Files_Sort_Date_Oldest from '@salesforce/label/c.Tucario_Files_Sort_Date_Oldest';
+import Files_Sort_Size_Largest from '@salesforce/label/c.Tucario_Files_Sort_Size_Largest';
+import Files_Sort_Size_Smallest from '@salesforce/label/c.Tucario_Files_Sort_Size_Smallest';
+import Files_Sort_Name_AZ from '@salesforce/label/c.Tucario_Files_Sort_Name_AZ';
+import Files_Sort_Name_ZA from '@salesforce/label/c.Tucario_Files_Sort_Name_ZA';
+
 // Dynamic labels — File component (large file download)
 import Files_Download_Mixed_Success from '@salesforce/label/c.Tucario_Files_Download_Mixed_Success';
 import Files_Download_Large_Success from '@salesforce/label/c.Tucario_Files_Download_Large_Success';
@@ -139,6 +148,15 @@ const LABELS = {
 
     // File component — tile view
     Files_Tile_Action_Alt,
+
+    // File component — sort
+    Files_Sort_Label,
+    Files_Sort_Date_Newest,
+    Files_Sort_Date_Oldest,
+    Files_Sort_Size_Largest,
+    Files_Sort_Size_Smallest,
+    Files_Sort_Name_AZ,
+    Files_Sort_Name_ZA,
 
     // File component — large file download
     Files_Download_Mixed_Success,

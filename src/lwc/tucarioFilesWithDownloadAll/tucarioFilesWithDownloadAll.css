@@ -94,6 +94,16 @@
     margin-top: 0.125rem;
 }
 
+.sort-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.25rem 0.75rem 0.25rem;
+}
+
+.sort-toolbar lightning-combobox {
+    max-width: 220px;
+}
+
 .empty-state {
     text-align: center;
     padding: 2rem 1rem;
