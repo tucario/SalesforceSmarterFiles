@@ -13,6 +13,7 @@ Open **Lightning App Builder** on any record page to configure the component.
 | Initial Files Displayed | Integer | `5` | Maximum number of files shown initially. Set to `0` to show all files. |
 | Display Mode | Picklist | `List` | `List` (vertical rows) or `Tiles` (grid of cards) |
 | Max File Size (MB) | Integer | `0` | Maximum upload size in megabytes. `0` = no limit. |
+| Default Sort Order | Picklist | `date-newest` | Default sort order for the file list. Users can change at runtime. |
 
 ## Display Modes
 
@@ -27,6 +28,21 @@ Files are displayed as vertical rows with file name, size, and date.
 Files are displayed as a responsive grid of cards with file type icons.
 
 <img src="images/tile-view.png" alt="Files component in Tiles view" width="450">
+
+## Sort Order
+
+The sort control appears above the file list, allowing users to re-sort files at runtime. The admin-configured **Default Sort Order** determines the initial sort when the page loads.
+
+| Value | Description |
+|-------|-------------|
+| `date-newest` | Date Added (Newest First) — default, preserves original behavior |
+| `date-oldest` | Date Added (Oldest First) |
+| `size-largest` | Size (Largest First) — useful for surfacing important attachments over small signature images |
+| `size-smallest` | Size (Smallest First) |
+| `name-az` | Name (A-Z) |
+| `name-za` | Name (Z-A) |
+
+Sorting is performed client-side on the already-loaded file list — no additional server calls are made when the sort order changes.
 
 ## Extension Format
 

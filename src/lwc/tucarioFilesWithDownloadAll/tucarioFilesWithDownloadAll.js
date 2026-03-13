@@ -173,6 +173,9 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         return formatLabel(LABELS.Files_Upload_Hint_Max_Size, this._maxFileSize);
     }
 
+    @api defaultSortOrder = 'date-newest';
+    currentSortOrder = 'date-newest';
+
     @api displayMode = 'List';
 
     get isTileView() {
@@ -250,6 +253,63 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
         return this.cardTitle + ' (' + this.fileCount + ')';
     }
 
+    get sortOptions() {
+        return [
+            { label: LABELS.Files_Sort_Date_Newest, value: 'date-newest' },
+            { label: LABELS.Files_Sort_Date_Oldest, value: 'date-oldest' },
+            { label: LABELS.Files_Sort_Size_Largest, value: 'size-largest' },
+            { label: LABELS.Files_Sort_Size_Smallest, value: 'size-smallest' },
+            { label: LABELS.Files_Sort_Name_AZ, value: 'name-az' },
+            { label: LABELS.Files_Sort_Name_ZA, value: 'name-za' }
+        ];
+    }
+
+    handleSortChange(event) {
+        this.currentSortOrder = event.detail.value;
+        this.sortFiles();
+    }
+
+    sortFiles() {
+        if (!this.files || this.files.length === 0) return;
+
+        const sortOrder = this.currentSortOrder || 'date-newest';
+
+        this.files = [...this.files].sort((a, b) => {
+            let result = 0;
+
+            switch (sortOrder) {
+                case 'date-newest':
+                    result = new Date(b.lastModifiedDate) - new Date(a.lastModifiedDate);
+                    if (result === 0) result = (a.displayName || '').localeCompare(b.displayName || '');
+                    break;
+                case 'date-oldest':
+                    result = new Date(a.lastModifiedDate) - new Date(b.lastModifiedDate);
+                    if (result === 0) result = (a.displayName || '').localeCompare(b.displayName || '');
+                    break;
+                case 'size-largest':
+                    result = (b.contentSize || 0) - (a.contentSize || 0);
+                    if (result === 0) result = new Date(b.lastModifiedDate) - new Date(a.lastModifiedDate);
+                    break;
+                case 'size-smallest':
+                    result = (a.contentSize || 0) - (b.contentSize || 0);
+                    if (result === 0) result = new Date(b.lastModifiedDate) - new Date(a.lastModifiedDate);
+                    break;
+                case 'name-az':
+                    result = (a.displayName || '').localeCompare(b.displayName || '');
+                    if (result === 0) result = new Date(b.lastModifiedDate) - new Date(a.lastModifiedDate);
+                    break;
+                case 'name-za':
+                    result = (b.displayName || '').localeCompare(a.displayName || '');
+                    if (result === 0) result = new Date(b.lastModifiedDate) - new Date(a.lastModifiedDate);
+                    break;
+                default:
+                    break;
+            }
+
+            return result;
+        });
+    }
+
     get zipFileName() {
         return this.recordName ? 'Files - ' + this.recordName + '.zip' : 'Files.zip';
     }
@@ -294,6 +354,8 @@ export default class TucarioFilesWithDownloadAll extends NavigationMixin(Lightni
                     tileActionAlt: formatLabel(LABELS.Files_Tile_Action_Alt, displayName)
                 };
             });
+            this.currentSortOrder = this.defaultSortOrder || 'date-newest';
+            this.sortFiles();
             this.error = undefined;
         } else if (result.error) {
             this.error = this.reduceErrors(result.error);

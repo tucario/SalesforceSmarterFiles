@@ -19,6 +19,15 @@
             </template>
 
             <template lwc:if={hasFiles}>
+                <div class="sort-toolbar">
+                    <lightning-combobox
+                        label={label.Files_Sort_Label}
+                        value={currentSortOrder}
+                        options={sortOptions}
+                        variant="label-hidden"
+                        onchange={handleSortChange}>
+                    </lightning-combobox>
+                </div>
                 <template lwc:if={isListView}>
                     <div class="slds-scrollable_y" style="max-height: 400px;">
                         <template for:each={displayedFiles} for:item="file">

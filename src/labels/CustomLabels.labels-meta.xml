@@ -353,6 +353,57 @@
         <value>File details updated successfully.</value>
     </labels>
 
+    <!-- File component — sort labels -->
+    <labels>
+        <fullName>Tucario_Files_Sort_Label</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sort Label</shortDescription>
+        <value>Sort by</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Sort_Date_Newest</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sort Date Newest</shortDescription>
+        <value>Date Added (Newest First)</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Sort_Date_Oldest</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sort Date Oldest</shortDescription>
+        <value>Date Added (Oldest First)</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Sort_Size_Largest</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sort Size Largest</shortDescription>
+        <value>Size (Largest First)</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Sort_Size_Smallest</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sort Size Smallest</shortDescription>
+        <value>Size (Smallest First)</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Sort_Name_AZ</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sort Name A-Z</shortDescription>
+        <value>Name (A-Z)</value>
+    </labels>
+    <labels>
+        <fullName>Tucario_Files_Sort_Name_ZA</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sort Name Z-A</shortDescription>
+        <value>Name (Z-A)</value>
+    </labels>
+
     <!-- Common labels -->
     <labels>
         <fullName>Tucario_Common_Save</fullName>
